@@ -1,0 +1,30 @@
+Beta 6:
+* File Search (Include Database Fast-Searching)
+* Add Logging (Both Database and Text File)
+* Test and fix all bugs related to user base directories (Beta 5 regression).
+* Add and test support for IE8.
+* MySQLi (WIP)
+* Copyright 2010 (WIP)
+
+Beta 7:
+* Directory Viewer Column Sorting
+* Directory Viewer Add/Remove Columns
+* Rewrite base file management tasks to OOP, thus reducing serious redundancy.
+* Rewrite directory viewer function to OOP.
+
+Beta 8:
+* Add Basic Theming (Through Seperate Style Sheets)
+* FTP
+
+Release Candiates:
+* Better document each function in lib/
+* Rewrite any functions in lib/ that can not be used universally for both graphical and non-graphical purposes (i.e. leave the output to any execution script).
+* Rewrite all appropriate lib functions to OOP.
+* Improve browser support: IE6+, FF2+, Safari 4+, Chrome 6+, Opera 9+ 
+* Remove E_NOTICE errors.
+** Excluding browser-specific "treat" features, like listing contents of files uploaded in File Upload.
+** Ensure basic support of all scripts without Javascript.
+** Ensure text-browsing works for all basic functions.
+
+Features That Would be Fun to Add:
+* Google Docs Support

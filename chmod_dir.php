@@ -1,0 +1,96 @@
+<?php
+/* Document Start */
+require('uac.php');
+
+static $stage;
+if (isset($_GET['stage'])) $stage = $_GET['stage'];
+
+echo documentStart('Change Directory Permissions');
+
+/* Document Content */
+if ($perm['ChmdD']) {
+  switch($stage) {
+    case null:
+    case 1:
+    $dirs = listDirs();
+    echo container('Change Permissions of a Directory','<form action="chmod_dir.php?stage=2" method="post">
+  <div class="left">
+    <label for="dir">Directory:</label><br />
+    ' . $dirs . '<br /><br />
+    <label for="perm">Permissions:</label><br />
+    <select name="perm" id="perm">
+      <option value="777" title="Owner, Group, Global - Read, Write, Execute">777</option>
+      <option value="755" title="Owner - Read, Write, Execute; Group, Global - Read, Execute">755</option>
+      <option value="744" title="Owner - Read, Write, Execute; Group, Global - Read">744</option>
+      <option value="700" title="Owner - Read, Write, Execute; Group, Global - Nothing">700</option>
+      <option value="555" title="Owner, Group, Global - Read, Execute">555</option>
+      <option value="544" title="Owner - Read, Execute; Group, Global - Read">544</option>
+      <option value="500" title="Owner - Read, Execute; Group, Global - Nothing">500</option>
+      <option value="400" title="Owner - Read; Group, Global - Nothing">400</option>
+    </select><br /><br />
+  </div>
+  <div class="right">
+    ' . container('Help','<div id="help">Here you can change directory permissions.</div>') . '
+  </div>
+  <div class="full">
+    <input name="submit" type="submit" value="Submit" /><input name="reset" type="reset" value="Reset" />
+  </div>
+</form>',0);
+    break;
+    case 2:
+    $dir = $uploadDirectory . $_POST['dir'];
+    $file = $_POST['file'];
+    $file2 = $accessDirectory . $_POST['dir'] . '/' . $_POST['file'];
+    switch($_POST['perm']) {
+      case '777': $perm = 0777; break;
+      case '755': $perm = 0755; break;
+      case '744': $perm = 0744; break;
+      case '700': $perm = 0700; break;
+      case '555': $perm = 0555; break;
+      case '544': $perm = 0544; break;
+      case '500': $perm = 0500; break;
+      case '400': $perm = 0400; break;
+      default: $perm = 0777; break;
+    }
+    if (chmodFile($dir,$file,$perm)) {
+      echo container('The file permissions have been changed. What would you like to do now?','<ol>
+  <li><a href="chmod_dir.php">Change Another File\'s Permissions</a></li>
+  <li><a href="index.php">Go to the Index</a></li>
+  <li><a href="viewfile.php?f=' . $file2 . '">View the Directory</a></li>
+  <li><a href="javascript:window.close()">Close this Window</a></li>
+</ol>',0);
+    }
+    else {
+      echo container('The file permission change failed. What would you like to do now?','<ol id="main">
+  <li><a href="chmod_dir.php">Change a File\'s Permissions Differently</a></li>
+  <li><a href="index.php">Go to the Index</a></li>
+  <li><a href="javascript:window.close();">Close This Window</a></li>
+</ol>',1);
+    }
+    break;
+    case 3:
+    $perm = intval(octdec($_POST['perm']));
+    $dir = $uploadDirectory . $_POST['dir'];
+    $dir2 = $accessDirectory . $_POST['dir'];
+    if (chmodFile($dir,$file,$perm)) {
+      echo container('The directory permissions have been successfully changed. What would you like to do now?','<ol>
+  <li><a href="chmod_dir.php">Change Another File\'s Permissions</a></li>
+  <li><a href="index.php">Go to the Index</a></li>
+  <li><a href="viewdir.php?d=' . $dir2 . '">View the Created Directory</a></li>
+  <li><a href="javascript:window.close()">Close this Window</a></li>
+</ol>',0);
+    }
+    else {
+      echo container('The directory permissions could not be changed. What would you like to do now?','<ol id="main">
+  <li><a href="chmod_dir.php">Change a Directory\'s Permissions Differently</a></li>
+  <li><a href="index.php">Go to the Index</a></li>
+  <li><a href="javascript:window.close();">Close This Window</a></li>
+</ol>',1);
+    }
+    break;
+  }
+}
+
+/* Document End */
+echo documentEnd();
+?>
