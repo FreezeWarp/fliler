@@ -77,7 +77,7 @@ if ($perm['View']) {
       }
       else $convert = true;
     }
-    else $convert = true;
+    else $convert = false;
 
     if ($convert) echo '<form action="download_file.php?stage=3" method="post"><input type="hidden" name="file" value="' . $file . '" /><input type="hidden" name="dir" value="' . $dir . '" /><input type="hidden" name="convert" value="1" /><label for="format">Format:</label> <select name="format">' . $options . '</select><input type="submit" value="Download" /></form>';
     else echo '<a href="download_file.php?stage=3&file=' . $file . '&dir=' . $dir . '">Proceed to the download.</a>';
@@ -100,9 +100,11 @@ if ($perm['View']) {
           if (class_exists('imagick')) {
             $image = new Imagick();
             $image->readImage($tempFileOriginal);
-            $image->writeImages($tempFile,false);
-            $image->clear();
-            $image->destroy();
+            $image2 = $image->appendImages(true);
+            $image2->writeImage($tempFile);
+            $image2->clear();
+            $image2->destroy();
+            downloadFile(null,$tempFile,$fileData['name'] . '.' . $format);
           }
           else {
             trigger_error('Can not convert PDF to JPEG; Imagick not installed.',E_USER_ERROR);

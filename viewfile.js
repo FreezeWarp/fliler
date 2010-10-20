@@ -19,3 +19,25 @@ function resizeImage(id,ratio) {
   image.height = imageHeight * ratio;
   image.width = imageWidth * ratio;
 }
+function resizeLimits(id) {
+  image = document.getElementById(id);
+  if (!imageHeight) {
+    imageHeight = image.height;
+    imageWidth = image.width;
+  }
+  
+  if (imageWidth < 25) {
+    $('#resizer').attr('min','100');
+    $('#resizer').attr('max','1600');
+  }
+  else if (imageWidth < 100) {
+    $('#resizer').attr('min','50');
+    $('#resizer').attr('max','800');
+  }
+  else if (imageWidth > 1000) {
+    $('#resizer').attr('max','100');
+  }
+  else if (imageWidth > 500) {
+    $('#resizer').attr('max','200');
+  }
+}

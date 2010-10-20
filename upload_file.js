@@ -157,12 +157,23 @@ function newField(fieldType) {
       $('#filesBox').append('<br /><input name="file[]" id="file[' + inputInstance + ']" onChange="upFiles(' + inputInstance + ')" type="file" multiple="multiple" x-child="' + inputInstance + '" />');
     }
     break;
+    
     case 1:
     if (typeof $ == 'undefined') {
       filesBox.innerHTML += '<br /><input name="urls[]" id="file[' + inputInstance + ']" onChange="upFiles2(' + inputInstance + ')" type="text" x-child="' + inputInstance + '" />';
     }
     else {
       $('#filesBox').append('<br /><input name="urls[]" id="file[' + inputInstance + ']" onChange="upFiles2(' + inputInstance + ')" type="text" x-child="' + inputInstance + '" />');
+    }
+    break;
+    
+    case 2:
+    // The Jqueryless fallback is a little buggy - previous file entries are deleted.
+    if (typeof $ == 'undefined') {
+      filesBox.innerHTML += '<br /><input name="file[]" id="file[' + inputInstance + ']" onChange="upFiles(' + inputInstance + ')" type="file" multiple="multiple" webkitdirectory="webkitdirectory" directory="directory" x-child="' + inputInstance + '" />';
+    }
+    else {
+      $('#filesBox').append('<br /><input name="file[]" id="file[' + inputInstance + ']" onChange="upFiles(' + inputInstance + ')" type="file" multiple="multiple" webkitdirectory="webkitdirectory" directory="directory" x-child="' + inputInstance + '" />');
     }
     break;
   }

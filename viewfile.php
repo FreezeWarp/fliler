@@ -58,6 +58,7 @@ if ($perm['View']) {
       'csv' => 10,
       'video' => 11,
       'audio' => 12,
+      'pdfimage' => 13,
     );
     // Determine default value.
     if (!$modeIndex[$_GET['mode']]) {
@@ -108,7 +109,14 @@ if ($perm['View']) {
     }
 
     $parentdirectory = 'viewdir.php?d=' . parentDirectory($file);
-    echo '<div class="toolbar" style="float: right; width: 75px;"><a href="download_file.php?stage=2&file=' . $file . '&convert=true"><img src="images/save.png" /></a><a href="edit_file.php?stage=2&file=' . urlencode($file) . '"><img src="images/edit.png" /></a></div><h3>File: ' . $file . '</h3><a href="' . $relativePath . '">View this directly in your browser</a> | <a href="' . $parentdirectory . '">See more files in this directory</a><hr />';
+    echo '
+  <div class="toolbar" style="float: right; width: 75px;">
+    <a href="download_file.php?stage=2&file=' . $file . '&convert=true"><img src="images/save.png" /></a>
+    <a href="edit_file.php?stage=2&file=' . urlencode($file) . '"><img src="images/edit.png" /></a>
+  </div>
+  <h3>File: ' . $file . '</h3>
+  <a href="' . $relativePath . '">View this directly in your browser</a> | <a href="' . $parentdirectory . '">See more files in this directory</a><hr />
+';
 
     // Generate the container based on the above.
     switch($mode) {
@@ -146,7 +154,12 @@ if ($perm['View']) {
 
       // Will be used if the file extension represents image data, or if the override "image" is used.
       case 6:
-      echo '<script src="viewfile.js"></script><img src="' . $uploadUrl . $file . '" id="image" /><br />Zoom: <input onkeyup="resizeImage(\'image\',(this.value / 100));" type="text" value="100" style="width: 40px;">%<hr />Generated with native-browser HTML image.';
+      echo '  <!-- For browsers compatible with HTML5 forms, a slider will be displayed, with limits later adjusted by Javascript depending on the images size and the image adjusted with the onchange property. For browsers incompatible, a textbox will be displayed without any limits and the image will be adjusted with the onkeyup property. -->
+  <script src="viewfile.js"></script>
+  <img src="' . $uploadUrl . $file . '" id="image" onload="resizeLimits(\'image\')" /><br />
+  Zoom: <input onchange="resizeImage(\'image\',(this.value / 100));" onkeyup="resizeImage(\'image\',(this.value / 100));" type="range" min="25" max="400" step="25" value="100" id="resizer" />%<hr />
+  Generated with native-browser HTML image.
+';
       break;
 
       // Will be used if the extension represents a document and AbiWord is installed, or if the override "abiword" is used.
@@ -206,121 +219,146 @@ if ($perm['View']) {
         $a++;
       }
 
-      echo '<script src="viewfile.js"></script><img src="' . $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '-0.jpg" id="image" /><br />Page: ' . implode(' | ',$preview) . '<br />Zoom: <input onkeyup="resizeImage(\'image\',(this.value / 100));" type="text" value="100" style="width: 40px;">%<hr />Generated with Imagick and Native-Browser HTML image.';
+      echo '  <script src="viewfile.js"></script>
+  <img src="' . $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '-0.jpg" id="image" onload="resizeLimits(\'image\')" /><br />
+  Page: ' . implode(' | ',$preview) . '<br />
+  Zoom: <input onchange="resizeImage(\'image\',(this.value / 100));" onkeyup="resizeImage(\'image\',(this.value / 100));" type="range" min="25" max="400" step="25" value="100" id="resizer" />%<hr />Generated with Imagick and Native-Browser HTML image.';
       break;
     }
 
     // Generate alternate displays.
-    echo '<hr /><b>Recommended Alternate Containers</b>: ';
+    echo '  <hr /><b>Recommended Alternate Containers</b>: ';
     if ($fileData['ext'] == 'csv') {
       echo '<a href="viewfile.php?file=' . $file . '&mode=gnumeric">Gnumeric</a> | <a href="viewfile.php?file=' . $file . '&mode=csv">HTML Table</a>';
     }
     elseif ($fileData['ext'] == 'svg' || $fileData['ext'] == 'svgz') {
       echo '<a href="viewfile.php?file=' . $file . '&mode=code">Highlighted Code</a> | <a href="viewfile.php?file=' . $file . '&mode=image">HTML Image</a>';
     }
+    elseif ($fileData['ext'] == 'pdf') {
+      echo '<a href="viewfile.php?file=' . $file . '&mode=abiword">AbiWord Document</a> | <a href="viewfile.php?file=' . $file . '&mode=pdfimage">PDF Image</a>';
+    }
     else {
       echo 'None.';
     }
 
-    echo '<br /><b>All Possible Containers</b>: <a href="viewfile.php?file=' . $file . '&mode=object">HTML Object</a> | <a href="viewfile.php?file=' . $file . '&mode=frame">HTML IFrame</a> | <a href="viewfile.php?file=' . $file . '&mode=text">Raw Text</a> | <a href="viewfile.php?file=' . $file . '&mode=code">Highlighted Code</a> | ' . (in_array($fileData['ext'],array('jpg','jpeg','gif','png','svg','svgz')) ? '<a href="viewfile.php?file=' . $file . '&mode=image">HTML Image</a> | ' : '') . (in_array($fileData['ext'],array('doc','docx','odt','sxw','abi')) ? ' | <a href="viewfile.php?file=' . $file . '&mode=abiword">AbiWord Documnt</a> | ' : '') . (in_array($fileData['ext'],array('csv','xls','xlsx','ods','sdc')) ? ' | <a href="viewfile.php?file=' . $file . '&mode=gnumeric">Gnumeric Document</a>' : '') . (in_array($fileData['ext'],array('mp2','mp3','mp4','wav','ogg','oga','ogv','mov')) ? ' | <a href="viewfile.php?file=' . $file . '&mode=video">HTML Video</a> | <a href="viewfile.php?file=' . $file . '&mode=audio">HTML Audio</a>' : '');
+    // Generate all possible continers.
+    $containers = array('<a href="viewfile.php?file=' . $file . '&mode=object">HTML Object</a>','<a href="viewfile.php?file=' . $file . '&mode=frame">HTML IFrame</a>','<a href="viewfile.php?file=' . $file . '&mode=text">Raw Text</a>','<a href="viewfile.php?file=' . $file . '&mode=code">Highlighted Code</a>');
+    if (in_array($fileData['ext'],array('jpg','jpeg','gif','png','svg','svgz'))) {
+      $containers[] = '<a href="viewfile.php?file=' . $file . '&mode=image">HTML Image</a>';
+    }
+    if (in_array($fileData['ext'],array('doc','docx','odt','sxw','abi','pdf'))) {
+      $containers[] = '<a href="viewfile.php?file=' . $file . '&mode=abiword">AbiWord Document</a>';
+    }
+    if (in_array($fileData['ext'],array('csv','xls','xlsx','ods','sdc'))) {
+      $containers[] = '<a href="viewfile.php?file=' . $file . '&mode=gnumeric">Gnumeric Document</a>';
+    }
+    if (in_array($fileData['ext'],array('mp2','mp3','mp4','wav','ogg','oga','ogv','mov'))) {
+      $containers[] = '<a href="viewfile.php?file=' . $file . '&mode=video">HTML Video</a>';
+      $containers[] = '<a href="viewfile.php?file=' . $file . '&mode=audio">HTML Audio</a>';
+    }
+
+    echo '<br />
+  <b>All Possible Containers</b>: ' . implode(' | ',$containers);
 
     echo '<hr />
-<table class="generic">
-  <tr>
-    <th colspan="2">File Data</th>
-  </tr>
-  <tr>
-    <td>Absolute Path</td>
-    <td>' . $fileData['full'] . '</td>
-  </tr>
-  <tr>
-    <td>Relative Path</td>
-    <td>' . $relativePath . '</td>
-  </tr>
-  <tr>
-    <td>File Name</td>
-    <td>' . $fileData['file'] . '</td>
-  </tr>
-  <tr>
-    <td>File Part</td>
-    <td>' . $fileData['name'] . '</td>
-  </tr>
-  <tr>
-    <td>File Extension</td>
-    <td>' . $fileData['ext'] . '</td>
-  </tr>
-  <tr>
-    <td>Mime Type</td>
-    <td>' . $fileData['mime'] . '</td>
-  </tr>
-  <tr>
-    <td>Owner</td>
-    <td>' . $fileData['owner'] . '</td>
-  </tr>
-  <tr>
-    <td>File Size</td>
-    <td>' . $fileData['size'][1] . '</td>
-  </tr>
-  <tr>
-    <td>Last Modification</td>
-    <td>' . $fileData['lastMod'][1] . '</td>
-  </tr>
-  <tr>
-    <td>Backup File?</td>
-    <td>' . (($fileData['backup']) ? 'Yes' : 'No') . '</td>
-  </tr>
-  <tr>
-    <td>Hidden/Dot File?</td>
-    <td>' . (($fileData['dot']) ? 'Yes' : 'No') . '</td>
-  </tr>
-  <tr>
-    <td>Writable?</td>
-    <td>' . (is_writable($fileData['full']) ? 'Yes' : 'No') . '</td>
-  </tr>
-  <tr>
-    <td>Readable?</td>
-    <td>' . (is_readable($fileData['full']) ? 'Yes' : 'No') . '</td>
-  </tr>
-  <tr>
-    <td>Base64</td>
-    <td><textarea cols="60" rows="6">' . $base64 . '</textarea>';
+  <table class="generic">
+    <tr>
+      <th colspan="2">File Data</th>
+    </tr>
+    <tr>
+      <td>Absolute Path</td>
+      <td>' . $fileData['full'] . '</td>
+    </tr>
+    <tr>
+      <td>Relative Path</td>
+      <td>' . $relativePath . '</td>
+    </tr>
+    <tr>
+      <td>File Name</td>
+      <td>' . $fileData['file'] . '</td>
+    </tr>
+    <tr>
+      <td>File Part</td>
+      <td>' . $fileData['name'] . '</td>
+    </tr>
+    <tr>
+      <td>File Extension</td>
+      <td>' . $fileData['ext'] . '</td>
+    </tr>
+    <tr>
+      <td>Mime Type</td>
+      <td>' . $fileData['mime'] . '</td>
+    </tr>
+    <tr>
+      <td>Owner</td>
+      <td>' . $fileData['owner'] . '</td>
+    </tr>
+    <tr>
+      <td>File Size</td>
+      <td>' . $fileData['size'][1] . '</td>
+    </tr>
+    <tr>
+      <td>Last Modification</td>
+      <td>' . $fileData['lastMod'][1] . '</td>
+    </tr>
+    <tr>
+      <td>Backup File?</td>
+      <td>' . (($fileData['backup']) ? 'Yes' : 'No') . '</td>
+    </tr>
+    <tr>
+      <td>Hidden/Dot File?</td>
+      <td>' . (($fileData['dot']) ? 'Yes' : 'No') . '</td>
+    </tr>
+    <tr>
+      <td>Writable?</td>
+      <td>' . (is_writable($fileData['full']) ? 'Yes' : 'No') . '</td>
+    </tr>
+    <tr>
+      <td>Readable?</td>
+      <td>' . (is_readable($fileData['full']) ? 'Yes' : 'No') . '</td>
+    </tr>
+    <tr>
+      <td>Base64</td>
+      <td><textarea cols="60" rows="6">' . wordwrap($base64,60,"\n",true) . '</textarea></td>
+    </tr>';
 
     if (in_array($fileData['ext'],array('png','gif','jpg','jpeg','bmp','psd','tif','tiff'))) {
       list($imageWidth,$imageHeight) = getimagesize($fileData['full']);
-      echo '  <tr>
-    <th colspan="2">Image Data</th>
-  </tr>
-  <tr>
-    <td>Width</td>
-    <td>' . $imageWidth . '</td>
-  </tr>
-  <tr>
-    <td>Height</td>
-    <td>' . $imageHeight .  '</td>
-  </tr>
-  <tr>
-    <td>HTML Embed</td>
-    <td><textarea cols="60" rows="1"><img src="' . $relativePath . '" /></textarea></td>
-  </tr>
-  <tr>
-    <td>HTML Embed<br />(with Link)</td>
-    <td><textarea rows="3" cols="60"><a href="' . $relativePath . '">' . "\n" . '<img src="' . $relativePath . '" />' . "\n" . '</a></textarea></td>
-  </tr>
-  <tr>
-    <td>HTML Embed<br />(as Data URI)</td>
-    <td><textarea cols="60" rows="6">' . wordwrap('<img src="data:' . $extQuery['mime'] . ';base64,' . $base64 . '" />',60,"\n",true) . '</textarea></td>
-  </tr>
-  <tr>
-    <td>BBCode Embed</td>
-    <td><textarea rows="1" cols="60">[img]' . $relativePath . '[/img]</textarea></td>
-  </tr>
-  <tr>
-    <td>BBCode Embed<br />(with Link)</td>
-    <td><textarea rows="3" cols="60">[url=' . $relativePath . ']' . "\n" . '[img]' . $relativePath . '[/img]' . "\n" . '[/url]</textarea></td>
-  </tr>';
-    }
+      echo '    <tr>
+      <th colspan="2">Image Data</th>
+    </tr>
+    <tr>
+      <td>Width</td>
+      <td>' . $imageWidth . '</td>
+    </tr>
+    <tr>
+      <td>Height</td>
+      <td>' . $imageHeight .  '</td>
+    </tr>
+    <tr>
+      <td>HTML Embed</td>
+      <td><textarea cols="60" rows="1"><img src="' . $relativePath . '" /></textarea></td>
+    </tr>
+    <tr>
+      <td>HTML Embed<br />(with Link)</td>
+      <td><textarea rows="3" cols="60"><a href="' . $relativePath . '">' . "\n" . '<img src="' . $relativePath . '" />' . "\n" . '</a></textarea></td>
+    </tr>
+    <tr>
+      <td>HTML Embed<br />(as Data URI)</td>
+      <td><textarea cols="60" rows="6">' . wordwrap('<img src="data:' . $extQuery['mime'] . ';base64,' . $base64 . '" />',60,"\n",true) . '</textarea></td>
+    </tr>
+    <tr>
+      <td>BBCode Embed</td>
+      <td><textarea rows="1" cols="60">[img]' . $relativePath . '[/img]</textarea></td>
+    </tr>
+    <tr>
+      <td>BBCode Embed<br />(with Link)</td>
+      <td><textarea rows="3" cols="60">[url=' . $relativePath . ']' . "\n" . '[img]' . $relativePath . '[/img]' . "\n" . '[/url]</textarea></td>
+    </tr>';
+  }
 
-    echo '</table>';
+    echo '
+  </table>';
   }
 }
 echo documentEnd();
