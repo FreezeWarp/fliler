@@ -57,10 +57,13 @@ if ($perm['EdF']) {
         $advanced = true;
       }
       elseif ((in_array($fileData['ext'],array('doc','docx','rtf','pdf','odt','sxw'))) && (is_executable('/usr/bin/abiword'))) {
-        $tempFile = $uploadDirectory . $tmpPathLocal . '.fliler-' . time() . '-' . $fileData['name'] . '.htm';
+        $tempFile = $uploadDirectory . $tmpPathLocal . '.fliler-' . time() . '-' . safeFile($fileData['name']) . '.htm';
+        $tempFileOriginal = $uploadDirectory . $tmpPathLocal . '.flilersource-' . $ut . '-' . safeFile($fileData['name']) . '.htm';
+        copyFile($fileData['full'],$tempFileOriginal);
+
         // Create the file. This allows us to overwrite any existing files and determine any errors before they happen.
         if (createFile(null,$tempFile,null,true)) {
-          exec($binaryPath . 'abiword "' . escapeshellcmd($fileData['full']) . '" -t html -o "' . escapeshellcmd($tempFile) . '"');
+          exec($binaryPath . 'abiword "' . $tempFileOriginal . '" -t html -o "' . $tempFile . '"');
           $content = readFileIntoString(null,$tempFile);
           if (false !== ($content = readFileIntoString(null,$tempFile))) {
             $fileData['content'] = $content;

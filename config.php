@@ -22,19 +22,20 @@
  * Users will not be able to access files below this directory. For full security (since this is never perfect), define a basedir in PHP.ini that matches this.
  * Example: '/home/$user/public_html/'
  * Example: '/var/www/' */
-$uploadDirectory = '/home/joseph/';
+$uploadDirectory = '/var/www/';
 
 /* The Location of the Fliler Installation
  * This is where Fliler is installed, such as the index.php file and lib/ directory.
  * Example: '/home/$user/public_html/'
  * Example: '/var/www/' */
-$installLocation = '/var/www/uploadb5/';
+$installLocation = '/var/www/uploadb6/';
 
 /* Upload Client URL
  * The URL from which Fliler will be accessed; the clientside location of $installLocation. Must include http://.
  * Example: "http://localhost/"
+echo $mode;
  * Leave blank if managing files that are not web accessible. */
-$uploadUrl = '';
+$uploadUrl = 'http://localhost/';
 
 /* Binary Path
  * This defines where binaries exist for use in Fliler. Abiword is most important, and is recommended to be installed. 

@@ -42,50 +42,106 @@ if ($perm['View']) {
     break;
 
     case 2:
-    $dir = (($_GET['dir']) ? $_GET['dir'] : $_POST['dir']);
+    $dir = formatDir(($_GET['dir']) ? $_GET['dir'] : $_POST['dir']);
     $file = (($_GET['file']) ? $_GET['file'] : $_POST['file']);
     if ($_POST['convert'] == 'on' || $_GET['convert']) {
       $fileData = fileData(null,$uploadDirectory . $dir . $file);
-      echo '<form action="download_file.php?stage=3" method="post"><input type="hidden" name="file" value="' . $file . '" /><input type="hidden" name="dir" value="' . $dir . '" /><input type="hidden" name="convert" value="1" /><label for="format">Format:</label> <select name="format">';
       switch ($fileData['ext']) {
         case 'doc': case 'docx': case 'odt': case 'swx': case 'htm': case 'pdf': case 'rtf':
-        echo '<option value="doc">Microsoft Word Document</option><option value="docx">OfficeOpen XML Document</option><option value="odt">OpenDocument Text</option><option value="sxw">StarWriter Document</option><option value="pdf">Adobe Acrobat PDF</option><option value="rtf">Microsoft Rich Text Format</option><option value="htm">HTML 4.01 Text</option>';
+        if (is_executable($binaryPath . 'abiword')) {
+          $options .= '<option value="doc">Microsoft Word Document</option><option value="docx">OfficeOpen XML Document</option><option value="odt">OpenDocument Text</option><option value="sxw">StarWriter Document</option><option value="pdf">Adobe Acrobat PDF</option><option value="rtf">Microsoft Rich Text Format</option><option value="htm">HTML 4.01 Text</option><option value="txt">Plain Text</option>';
+        }
+        if ($fileData['ext'] == 'pdf' && class_exists('imagick')) {
+          $options .= '<option value="jpg">JPEG Image</option>';
+        }
         break;
+
         case 'png': case 'gif': case 'jpg': case 'jpeg': case 'jpe':
-        echo '<option value="png">Portable Network Graphics (PNG)</option><option value="gif">Graphics Interchange Format (GIF)</option><option value="jpeg">JPEG Format</option>';
+        if (function_exists('imagecreatefrompng') || class_exists('imagick')) {
+          $options .= '<option value="png">Portable Network Graphics (PNG)</option><option value="gif">Graphics Interchange Format (GIF)</option><option value="jpeg">JPEG Format</option>';
+        }
+        if (class_exists('imagick')) {
+          $options .= '<option value="pdf">Portable Document Format (PDF)</option><option value="tiff">Tagged Image File Format (TIFF)</option>';
+        }
         break;
+
         default:
         case 'svg':
-        echo '<option value="png">Portable Network Graphics (PNG)</option><option value="jpg">JPEG Format</option><option value="tiff">Tagged Image File Format (TIFF)</option><option value="pdf">Adobe Acrobat PDF</option>';
+        $options .= '<option value="png">Portable Network Graphics (PNG)</option><option value="jpg">JPEG Format</option><option value="tiff">Tagged Image File Format (TIFF)</option><option value="pdf">Adobe Acrobat PDF</option>';
         break;
       }
-      echo '</select><input type="submit" value="Download" /></form>';
+
+      if (!$options) {
+        trigger_error('The neccessary dependencies are not installed for conversion.');
+        $convert = false;
+      }
+      else $convert = true;
     }
-    else {
-      echo '<a href="download_file.php?stage=3&file=' . $file . '&dir=' . $dir . '">Proceed to the download.</a>';
-    }
+    else $convert = true;
+
+    if ($convert) echo '<form action="download_file.php?stage=3" method="post"><input type="hidden" name="file" value="' . $file . '" /><input type="hidden" name="dir" value="' . $dir . '" /><input type="hidden" name="convert" value="1" /><label for="format">Format:</label> <select name="format">' . $options . '</select><input type="submit" value="Download" /></form>';
+    else echo '<a href="download_file.php?stage=3&file=' . $file . '&dir=' . $dir . '">Proceed to the download.</a>';
     break;
 
     case 3:
-    $dir = (($_GET['dir']) ? $_GET['dir'] : $_POST['dir']);
+    $dir = formatDir((($_GET['dir']) ? $_GET['dir'] : $_POST['dir']));
     $file = (($_GET['file']) ? $_GET['file'] : $_POST['file']);
     if ($_POST['convert'] || $_GET['convert']) {
       $fileData = fileData(null,$uploadDirectory . $dir . $file);
       $format = (($_GET['format']) ? $_GET['format'] : $_POST['format']);
-      $tempFile = $uploadDirectory . $tmpPathLocal . '.fliler-' . time() . '-' . $fileData['name'] . '.' . $format;
+      $ut = time();
+      $tempFile = $uploadDirectory . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '.' . $format;
+      $tempFileOriginal = $uploadDirectory . $tmpPathLocal . '.flilersource-' . $ut . '-' . safeFile($fileData['name']) . '.' . $fileData['ext'];
+      copyFile($fileData['full'],$tempFileOriginal);
+
       switch ($fileData['ext']) {
         case 'doc': case 'docx': case 'odt': case 'swx': case 'htm': case 'pdf': case 'rtf':
-        exec($binaryPath . 'abiword "' . escapeshellcmd($fileData['full']) . '" -t ' . $format . ' -o "' . escapeshellcmd($tempFile) . '" --exp-props="embed-css: yes; embed-images: yes;"');
-        downloadFile(null,$tempFile,$fileData['name'] . '.' . $format);
+        if ($fileData['ext'] == 'pdf' && $format == 'jpg') {
+          if (class_exists('imagick')) {
+            $image = new Imagick();
+            $image->readImage($tempFileOriginal);
+            $image->writeImages($tempFile,false);
+            $image->clear();
+            $image->destroy();
+          }
+          else {
+            trigger_error('Can not convert PDF to JPEG; Imagick not installed.',E_USER_ERROR);
+          }
+        }
+        else {
+          if (is_executable($binaryPath . 'abiword')) {
+            exec($binaryPath . 'abiword "' . $tempFileOriginal . '" -t ' . $format . ' -o "' . $tempFile . '"');
+            downloadFile(null,$tempFile,$fileData['name'] . '.' . $format);
+          }
+          else {
+            trigger_error('Abiword not installed.',E_USER_ERROR);
+          }
+        }
         break;
+
         case 'png': case 'gif': case 'jpeg': case 'jpe': case 'jpg':
         if ($fileData['ext'] == 'jpe' || $fileData['ext'] == 'jpg') { $fileData['ext'] = 'jpeg'; }
-        $inputFunction = '$image = imagecreatefrom' . $fileData['ext'] . '(\'' . $fileData['full'] . '\');';
-        $outputFunction = 'image' . $format . '($image,$tempFile);';
-        eval($inputFunction);
-        eval($outputFunction);
-        downloadFile(null,$tempFile,$fileData['name'] . '.' . $format);
+
+        if (class_exists('imagick')) {
+          $image = new Imagick();
+          $image->readImage($tempFileOriginal);
+          $image->writeImages($tempFile,false);
+          $image->clear();
+          $image->destroy();
+          downloadFile(null,$tempFile,$fileData['name'] . '.' . $format);
+        }
+        elseif (function_exists('imagecreatefrompng') && in_array($format,array('jpg','png','gif'))) {
+          $inputFunction = '$image = imagecreatefrom' . $fileData['ext'] . '(\'' . $fileData['full'] . '\');';
+          $outputFunction = 'image' . $format . '($image,$tempFile);';
+          eval($inputFunction);
+          eval($outputFunction);
+          downloadFile(null,$tempFile,$fileData['name'] . '.' . $format);
+        }
+        else {
+          trigger_error('Imagick or GD not installed.',E_USER_ERROR);
+        }
         break;
+
         case 'svg':
         switch ($format) {
           case 'pdf': $mime = 'application/pdf'; break;

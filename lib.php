@@ -251,6 +251,11 @@ class getBrowser {
   }
 }
 
+// Converts file name to file that can be safely executed anywhere.
+function safeFile($string) {
+  return $string = preg_replace('[\W]','_',$string);
+}
+
 /* createFile v.2 */
 function createFile($dir,$file,$content = null,$overwrite = 0) {
   if ($dir) {

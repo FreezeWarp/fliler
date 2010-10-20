@@ -21,7 +21,7 @@ if ($perm['View']) {
   $fileTemp = ((($_GET['f']) ? $_GET['f'] : $_GET['file']));
   $dir = (($_GET['dir']) ? '/' . $_GET['dir'] . '/' : '');
   $file = str_replace('//','/',$dir . $fileTemp);
-  $file2 = formatDir($dir,true) . $file;
+  $file2 = formatDir($dir,true) . $fileTemp;
 
   //if (substr($file,0,1) != '/') { preg_replace('/^\/(.*)/','$1',$file); }
   if (!$fileTemp) {
@@ -32,19 +32,17 @@ if ($perm['View']) {
   }
   else {
     $base64 = base64_encode($fileData['content']);
-    @mysql_connect($mysqlHost,$mysqlUser,$mysqlPassword);
-    @mysql_select_db($mysqlDatabase);
-    $extQuery = @mysql_fetch_assoc(@mysql_query('SELECT * FROM ' . $mysqlPrefix . 'filetypes WHERE ext = "' . $fileData['ext'] . '"'));
 
     $relativePath = $uploadUrl . str_replace($uploadDirectory,'',$fileData['dir']) . urlencode($fileData['file']);
   
-    // The full path to the existing file.
-    $permFile = $file2;
-    // Where a temporary file will be stored if it needs to be created.
-    $ut = time();
-    $tempFile = $uploadDirectory . $tmpPathLocal . '.fliler-' . $ut . '-' . $fileData['name'] . '.htm';
-    $tempFileUrl = $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . urlencode($fileData['name']) . '.htm';
-    createFile(null,$tempFile,null,1);
+    $permFile = $file2; // The full path to the existing file.
+
+    // Create temporary files.
+    $ut = time(); // Get timestamp.
+    $tempFileOriginal = $uploadDirectory . $tmpPathLocal . '.flilersource-' . $ut . '-' . safeFile($fileData['name']) . '.' . $fileData['ext'];
+    copyFile($fileData['full'],$tempFileOriginal);
+
+    //createFile(null,$tempFile,null,1);
 
     // Override values.
     $modeIndex = array(
@@ -61,7 +59,6 @@ if ($perm['View']) {
       'video' => 11,
       'audio' => 12,
     );
-
     // Determine default value.
     if (!$modeIndex[$_GET['mode']]) {
       if ((in_array($fileData['ext'],$exts['dev'])) || (in_array($fileData['ext'],$exts['web'])) || (in_array($fileData['ext'],$exts['text']))) {
@@ -69,6 +66,9 @@ if ($perm['View']) {
       }
       elseif (in_array($fileData['ext'],$exts['image'])) {
         $mode = 6;
+      }
+      elseif ($fileData['ext'] == 'pdf' && class_exists('imagick')) {
+        $mode = 13;
       }
       elseif (in_array($fileData['ext'],$exts['document'])) {
         if (is_executable('/usr/bin/abiword')) {
@@ -151,12 +151,19 @@ if ($perm['View']) {
 
       // Will be used if the extension represents a document and AbiWord is installed, or if the override "abiword" is used.
       case 7:
-      exec($binaryPath . 'abiword "' . escapeshellcmd($fileData['full']) . '" -t html -o "' . escapeshellcmd($tempFile) . '" --exp-props="embed-css: yes; embed-images: yes;"');
+      $tempFile = $uploadDirectory . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '.htm';
+      $tempFileUrl = $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '.htm';
+
+      exec($binaryPath . 'abiword "' . $tempFileOriginal . '" -t html -o "' . $tempFile . '" --exp-props="embed-css: yes;"');
       echo '<iframe src="' . $tempFileUrl . '" style="height: 400px;" class="generic"></iframe><hr />Displayed with AbiWord.';
       break;
 
       // Will be used if the document is a spreadsheet and Gnumeric is installed, or if the override "gnumeric" is used.
       case 9:
+      $tempFile = $uploadDirectory . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '.htm';
+      $tempFileUrl = $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '.htm';
+      createFile($tempFile);
+
       exec('/usr/bin/ssconvert "' . $permFile . '" "' . $tempFile . '" --export-type=Gnumeric_html:xhtml');
       echo '<iframe src="' . $uploadUrl . '.fliler-' . $fileData['name'] . '.htm" style="width: 100%; height: 400px;"></iframe><hr />Displayed with Gnumeric.';
       break;
@@ -175,6 +182,31 @@ if ($perm['View']) {
       // Will be used if the file is a audio, or if the override "audio" is used.
       case 12:
       echo '<audio src="' . $uploadUrl . $file . '" style="width: 400px;" controls="controls"></audio><hr />Displayed with native browser HTML5 audio.';
+      break;
+
+      case 13:
+      $tempFile = $uploadDirectory . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '.jpg';
+      $tempFileUrl = $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '.jpg';
+//      createFile($tempFile);
+
+      $image = new Imagick();
+      $image->readImage($tempFileOriginal);
+      $image->writeImages($tempFile,false);
+      $image->clear();
+      $image->destroy();
+
+      $a = 0;
+      while (true) {
+        $image = $tmpPathLocal . ".fliler-$ut-" . safeFile($fileData['name']) . "-$a.jpg";
+        if (file_exists($uploadDirectory . $image)) {
+          $preview[] = '<a href="javascript:void(0);" onclick="$(\'#image\').attr(\'src\',\'' . addslashes($uploadUrl . $image) . '\');">' . ($a + 1) . '</a>
+';
+        }
+        else break;
+        $a++;
+      }
+
+      echo '<script src="viewfile.js"></script><img src="' . $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '-0.jpg" id="image" /><br />Page: ' . implode(' | ',$preview) . '<br />Zoom: <input onkeyup="resizeImage(\'image\',(this.value / 100));" type="text" value="100" style="width: 40px;">%<hr />Generated with Imagick and Native-Browser HTML image.';
       break;
     }
 
