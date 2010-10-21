@@ -83,7 +83,7 @@ class fileManager {
       $this->activeDir = $parentDir;
       $this->createDir(false,$perm);
     }
-    if (is_dir($dir)) { echo 1;
+    if (is_dir($dir)) {
       if (!$overwrite) { trigger_error($dir . ' cannot be created because it already exists and is not to be overwritten',E_USER_ERROR); return false; }
       else {
         if(!deleteDir($dir)) { trigger_error($dir . ' already exists and cannot be deleted.',E_USER_ERROR); return false; }
@@ -95,7 +95,7 @@ class fileManager {
   }
 }
 
-class fileConstruct() {
+class fileConstruct {
   public function setString($string) {
     $this->string = $string;
   }
@@ -1241,6 +1241,51 @@ function bufferErrors() {
     }
   }
   return $return;
+}
+
+
+
+function errorHandler($errno, $errstr, $errfile, $errline) {
+  global $errors,$errorsBuffered,$errorsDetailed,$errorsCommon;
+
+  $error_text = array(
+    E_USER_ERROR => 'Error',
+    E_USER_WARNING => 'Warning',
+    E_USER_NOTICE => 'Notice',
+    E_ERROR => 'PHP Error',
+    E_WARNING => 'PHP Warning',
+    E_NOTICE => 'PHP Notice',
+    E_STRICT => 'Strict Error',
+    E_DEPRECATED => 'Depreciated Error',
+  );
+
+  $error_codes = array(
+    E_USER_ERROR => 1,
+    E_USER_WARNING => .5,
+    E_USER_NOTICE => 0,
+    E_ERROR => 1,
+    E_WARNING => .5,
+    E_NOTICE => 0,
+    E_STRICT => .5,
+    E_DEPRECATED => .5,
+  );
+
+  if (error_reporting()) {
+    if ($errno == E_NOTICE && !$errorsCommon) return true;
+
+    // Start by generating the string. We'll determine whether or not to echo it later.
+    $errorString = $errstr . (($errorsDetailed) ? ' on line ' . $errline . ' in file ' . $errfile : '') . '<br />';
+    if ($errorsBuffered) {
+      $errors[$errno] .= '<li>' . $errorString . '</li>';
+    } else {
+     echo container($error_text[$errno],$errorString,$error_codes[$errno]);
+    }
+    // Log error.
+    error_log($errorString);
+  }
+
+  // Don't execute PHP internal error handler
+  return true;
 }
 
 function callback($buffer) {
