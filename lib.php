@@ -95,6 +95,16 @@ class fileManager {
   }
 }
 
+class fileConstruct() {
+  public function setString($string) {
+    $this->string = $string;
+  }
+
+  public function safeFile() {
+    $this->string = preg_replace('[\W]','_',$this->string);
+  }
+}
+
 class getBrowser {
   public function __construct() {
     $this->browsers = array(
@@ -597,7 +607,7 @@ function friendlySize($b,$r = 2) {
   return $friendlySize;
 }
 
-/* mos(valid directory string $dir, valid file string $file)
+/* mod(valid directory string $dir, valid file string $file)
  * $dir - A sting containing a valid directory.
  * $file - A string containing a valid file w/o the directory.
  * Returns an array, the first value being and integer with the modification time of the file, the second being a friendly string of this*/
@@ -868,21 +878,24 @@ function readArray($array) {
 }
 
 function getMemLimit($val = false) {
-  if (!$val) {
-    $val = ini_get('memory_limit');
+  if (!$val) { $val = trim(ini_get('memory_limit')); }
+
+  return parseConfigNum($val);
+}
+
+//http://us3.php.net/manual/en/ini.core.php
+function parseConfigNum($v){
+  $l = substr($v, -1);
+  $ret = substr($v, 0, -1);
+  switch(strtoupper($l)){
+    case 'P': $ret *= 1024;
+    case 'T': $ret *= 1024;
+    case 'G': $ret *= 1024;
+    case 'M': $ret *= 1024;
+    case 'K': $ret *= 1024;
+    break;
   }
-  $val = trim($val);
-  $last = strtolower($val[strlen($val)-1]);
-  switch($last) {
-    // The 'G' modifier is available since PHP 5.1.0
-    case 'g':
-      $val *= 1024;
-    case 'm':
-      $val *= 1024;
-    case 'k':
-      $val *= 1024;
-  }
-  return $val;
+  return $ret;
 }
 
 function listDirs($dirName = 'dir',$fileName = 'file',$tabIndex = null) {
@@ -1031,55 +1044,15 @@ function downloadFile($dir,$file,$fileName = null,$mime = null) {
 
   // Don't cache.
   header('Expires: 0');
-//  header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
   header("Cache-control: private");
 
   // Clear the output buffer for the sake of CPU and RAM.
   ob_end_clean();
   flush();
 
-
-/*  // Multipart Download (http://w-shadow.com/blog/2007/08/12/how-to-force-file-download-with-php/)
-  if (isset($_SERVER['HTTP_RANGE'])) {
-    list($a, $range) = explode("=", $_SERVER['HTTP_RANGE'], 2);
-    list($range) = explode(",", $range, 2);
-    list($range, $range_end) = explode("-", $range);
-    $range = intval($range);
-    if (!$range_end) {
-      $range_end = $size - 1;
-    }
-    else {
-      $range_end = intval($range_end);
-    }
- 
-    $new_length = $range_end - $range + 1;
-    header("HTTP/1.1 206 Partial Content");
-    header("Content-Length: $new_length");
-    header("Content-Range: bytes $range-$range_end/$size");
-  }
-  else {
-    $new_length = $size;
-    header('Content-Length: ' . $size);
-  }
- 
-  $chunksize = 4 * 1024 * 1024; // 16 Megabytes
-  $bytes_send = 0;
-  if ($fp = fopen($file, 'r')) {
-    if(isset($_SERVER['HTTP_RANGE'])) fseek($file, $range);
-    while(!feof($fp) && !connection_aborted() && ($bytes_send < $new_length)) {
-      echo fread($fp, $chunksize);
-      
-      flush();
-      $bytes_send += $chunksize;
-    }
-    fclose($fp);
-  }*/
-
   $fp = fopen($data['full'], 'r');
   while (!feof($fp)) {
     echo fread($fp, (getMemLimit() > 32 * 1024 * 1024 ? 16 * 1024 * 1024 : 1024 * 1024)); // Packet size of 16MB, or 1MB if sufficient RAM is not available.
-    //$stream_meta_data = stream_get_meta_data($fp);
-    //if ($stream_meta_data['unread_bytes'] <= 0) break;
   }
 }
 
@@ -1144,6 +1117,7 @@ function documentStart($title) {
 <head>
   <title>' . $branding . ': Online File Manager - ' . $title . '</title>
   <meta name="author" content="Joseph Parsons" />
+  <meta name="generator" content="Fliler v.B6" />
   <link rel="stylesheet" type="text/css" href="styles.css" />' . (($enableJquery) ? '
   <script type="text/javascript" src="jquery.js"></script>' : '') . (($include) ? '<script type="text/javascript" src="' . $include . '"></script>' : '') . '
   <script type="text/javascript" src="scripts.js"></script>
@@ -1163,7 +1137,7 @@ function documentEnd() {
     return '</div>
 </body>
 </html>';
-  define('DOC_ENDED',true);
+  define('DOC_ENDED',true); // This may be redundant... I know I added it for /some/ reason.
   }
 }
 
@@ -1236,186 +1210,6 @@ function csvtoTable($filename) {
   return '<table border="1">' . $replaced . '</table>';
 }
 
-/* Returns an executable command to be used with eval. This will usually be exec('xyz'), though may also be another library function. If no command is found, it will return false.
- * Note that this largely relies on the binary path and system you are using. Few conversions can be made with Fliler itself. */
-function convert($from,$to) {
-  global $binaryPath;
-  // Define identical file extensions.
-  $alias = array(
-    'htm' => array('html','htm'),
-    'txt' => array('txt','text'),
-    'jpg' => array('jpg','jpeg','jpe'),
-  );
-  foreach ($alias as $key => $value) {
-    if (in_array($to,$value)) {
-      $to = $key;
-    }
-    if (in_array($from,$value)) {
-      $from = $key;
-    }
-  }
-
-  // Define file types supported by different applications.
-  $abiSupport = array(
-    'to' => array('htm','doc','docx','odt','txt','pdf'),
-    'from' => array('htm','doc','docx','odt','txt','pdf'),
-  );
-  $gnumericSupport = array(
-    'to' => 'csv','xls','xlsx','ods',
-    'from' => 'csv','xls','xlsx','ods',
-  );
-  $wvHtmlSupport = array(
-    'to' => array('htm'),
-    'from' => array('doc'),
-  );
-  $gdSupport = array(
-    'to' => array('jpg','png','gif'),
-    'from' => array('jpg','png','gif'),
-  );
-
-  if (is_executable($binaryPath . 'abiword')) {
-    if ((in_array($to,$abiSupport['to'])) && in_array($from,$abiSupport['from'])) {
-      return array(
-        'method' => 'abiword',
-        'command' => '$handle = popen("' . $binaryPath . 'abiword --plugin AbiCommand", "w"); fputs($handle, "convert \"[inFile]\" \"[outFile]\" ' . $to . '");',
-      );
-    }
-  }
-  if (is_executable($binaryPath . 'gnumeric')) {
-    if ((in_array($to,$gnumericSupport['to'])) && in_array($from,$gnumericSupport['from'])) {
-      return array(
-        'method' => 'gnumeric',
-      );
-    }
-  }
-  if (is_executable($binaryPath . 'wvHtml')) {
-    if ((in_array($to,$wvHtmlSupport['to'])) && in_array($from,$wvHtmlSupport['from'])) {
-      return array(
-        'method' => 'wvHtml',
-        'command' => 'exec("wvHtml [inFile] [outFile]");',
-      );
-    }
-  }
-  if (is_executable($binaryPath . 'html2text')) {
-    if (($from == 'htm') && ($to == 'txt')) {
-      return array(
-        'method' => 'html2text',
-        'command' => '',
-      );
-    }
-  }
-  if (is_executable($binaryPath . 'pdftotext')) {
-    if (($from == 'pdf') && ($to == 'txt')) {
-      
-    }
-  }
-  // Less than ideal(?)
-  if (function_exists('imagegd')) {
-    if ((in_array($to,$gdSupport['to'])) && in_array($from,$gdSupport['from'])) {
-      return array(
-        'method' => 'gd',
-        'command' => '$imageResource = imagecreatefrom' . $from . '("[inFile]"); image' . $to . '($imageResource);',
-      );
-    }
-  }
-  if (function_exists($binaryPath . 'chm2pdf')) {
-    if (($from == 'chm') && ($to == 'pdf')) {
-      return array(
-        'method' => 'chm2pdf',
-        'command' => '',
-      );
-    }
-  }
-
-  // Combines above functions.
-  if ($from == 'chm') {
-    if ((in_array($to,$abiSupport['to'])) && (in_array('pdf',$abiSupport['from']))) {
-      if ($result = convert('chm','pdf')) {
-        if ($result2 = convert('pdf',$to)) {
-          return array(
-
-          );
-        }
-      }
-    }
-  }
-
-  elseif (((in_array($from,$gnumeric)) && (in_array($to,$gnumeric))) && (is_executable('/usr/bin/ssconvert'))) {
-  }
-  elseif (($from == 'csv') && ($to == 'htm')) {
-  }
-/*  switch ($from) {
-    case 'doc':
-      if ((in_array($to,array('htm','docx','odt','txt','pdf'))) && (is_executable($binaryPath . 'abiword'))) {
-        $method = 'abiword';
-      }
-      elseif (($to == 'html') && (is_executable($binaryPath . 'wvHtml'))) {
-        $method = 'wvhtml';
-      }
-    break;
-    case 'htm':
-      if ((in_array($to,array('doc','docx','odt','pdf'))) && (is_executable($binaryPath . 'abiword'))) {
-        $method = 'abiword';
-      }
-      elseif (($to == 'txt') && (is_executable($binaryPath . 'html2text'))) {
-        $method = 'html2text';
-      }
-      elseif ($to == 'txt') {
-        $method = 'ascii';
-      }
-    break;
-    case 'docx':
-      if ((in_array($to,array('htm','doc','odt','txt','pdf'))) && (is_executable($binaryPath . 'abiword'))) {
-        $method = 'abiword';
-      }
-    break;
-    case 'odt':
-      if ((in_array($to,array('htm','docx','doc','txt','pdf'))) && (is_executable($binaryPath . 'abiword'))) {
-        $method = 'abiword';
-      }
-    break;
-    case 'pdf':
-      if ((in_array($to,array('htm','docx','odt','txt','doc'))) && (is_executable($binaryPath . 'abiword'))) {
-        $method = 'abiword';
-      }
-    break;
-    case 'txt':
-      $method = 'ascii';
-    break;
-    case 'png':
-      if (in_array($to,array('gif','jpg','jpeg'))) {
-        $method = 'gd';
-      }
-    break;
-    case 'gif':
-      if (in_array($to,array('png','jpg','jpeg'))) {
-        $method = 'gd';
-      }
-    break;
-    case 'jpeg':
-    case 'jpg':
-      if (in_array($to,array('gif','png'))) {
-        $method = 'gd';
-      }
-    break;
-    case 'csv':
-      if ($to == 'htm') {
-        $method = 'csv2htmlTable';
-      }
-    break;
-    case 'xls':
-
-    break;
-    case 'xlsx':
-
-    break;
-    case 'ods':
-
-    break;
-  }
-  $abiWord = array('doc','htm','docx','odt','rtf','txt');*/
-}
-
 function bufferErrors() {
   global $errors,$warnings,$notices,$usererrors,$userwarnings,$usernotices,$errorsCommon,$errorsDetailed,$errorsBuffered,$errosPhp;
   static $return;
@@ -1448,6 +1242,7 @@ function bufferErrors() {
   }
   return $return;
 }
+
 function callback($buffer) {
   global $errorsBuffered,$errorsBufferedPlacement,$enableGzBuffering;
 
@@ -1536,6 +1331,24 @@ class form {
       case 'textarea':
       $this->form .= (($label) ? '<label for="' . $id . '">' . $label . '</label><br />' : '') . '<textarea id="' . $id . '" name="' . $id . '" tabindex="' . $tabIndex . '">' . $value . '</textarea>';
       break;
+      case 'email':
+
+      break;
+      case 'url':
+
+      break;
+      case 'range':
+
+      break;
+      case 'slider':
+
+      break;
+      case 'time':
+
+      break;
+      case 'date':
+
+      break;
     }
   }
   function nl($times) {
@@ -1555,64 +1368,6 @@ class form {
     $outputForm = '<form action="' . $this->action . '" method="' . $this->method . '" id="' . $this->id . '" name="' . $this->id . '" target="' . $this->target . '" enctype="' . $this->enctype . '">' . $this->form . '</form>';
     return $outputForm;
   }
-}
-
-//http://us3.php.net/manual/en/ini.core.php
-function parseConfigNum($v){
-  $l = substr($v, -1);
-  $ret = substr($v, 0, -1);
-  switch(strtoupper($l)){
-    case 'P': $ret *= 1024;
-    case 'T': $ret *= 1024;
-    case 'G': $ret *= 1024;
-    case 'M': $ret *= 1024;
-    case 'K': $ret *= 1024;
-    break;
-  }
-  return $ret;
-}
-
-function errorHandler($errno, $errstr, $errfile, $errline) {
-  global $errors,$errorsBuffered,$errorsDetailed,$errorsCommon;
-
-  $error_text = array(
-    E_USER_ERROR => 'Error',
-    E_USER_WARNING => 'Warning',
-    E_USER_NOTICE => 'Notice',
-    E_ERROR => 'PHP Error',
-    E_WARNING => 'PHP Warning',
-    E_NOTICE => 'PHP Notice',
-    E_STRICT => 'Strict Error',
-    E_DEPRECATED => 'Depreciated Error',
-  );
-
-  $error_codes = array(
-    E_USER_ERROR => 1,
-    E_USER_WARNING => .5,
-    E_USER_NOTICE => 0,
-    E_ERROR => 1,
-    E_WARNING => .5,
-    E_NOTICE => 0,
-    E_STRICT => .5,
-    E_DEPRECATED => .5,
-  );
-
-  if (error_reporting()) {
-    if ($errno == E_NOTICE && !$errorsCommon) return true;
-
-    // Start by generating the string. We'll determine whether or not to echo it later.
-    $errorString = $errstr . (($errorsDetailed) ? ' on line ' . $errline . ' in file ' . $errfile : '') . '<br />';
-    if ($errorsBuffered) {
-      $errors[$errno] .= '<li>' . $errorString . '</li>';
-    } else {
-     echo container($error_text[$errno],$errorString,$error_codes[$errno]);
-    }
-    // Log error.
-    error_log($errorString);
-  }
-
-  // Don't execute PHP internal error handler
-  return true;
 }
 
 function jsEscape($string) {

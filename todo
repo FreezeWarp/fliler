@@ -2,7 +2,6 @@ Beta 6:
 * File Search (Include Database Fast-Searching)
 * Add Logging (Both Database and Text File)
 * Test and fix all bugs related to user base directories (Beta 5 regression).
-* Add and test support for IE8.
 * MySQLi (WIP)
 * Copyright 2010 (WIP)
 
@@ -11,6 +10,7 @@ Beta 7:
 * Directory Viewer Add/Remove Columns
 * Rewrite base file management tasks to OOP, thus reducing serious redundancy.
 * Rewrite directory viewer function to OOP.
+* Add and test support for IE8/IE9.
 
 Beta 8:
 * Add Basic Theming (Through Seperate Style Sheets)
