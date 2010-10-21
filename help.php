@@ -27,7 +27,7 @@ Fliler is a file manager designed to be light on browsers, while still being eas
     <li><a href="#install-php">Using Install.php</a></li>
     <li><a href="#no-install-php">Not Using Install.php</a></li>
   </ol>
-  <li><a href="#php-confg">PHP Config Options</a></li>
+  <li><a href="#php-config">PHP Config Options</a></li>
   <li><a href="#addons">Additional Software</a></li>
   <ol>
     <li><a href="#required">Required</a></li>
@@ -120,6 +120,7 @@ The configuration options in php.ini can sometimes cause problems for Fliler. In
       <li><b>PCRE (Critical)</b> - PCRE Regular Expressions is used throughout the library files.</li>
       <li><b>ZIP Compression (Recommended)</b> - The zip file archiver extension is required to download backups from MySQL and download directories.</li>
       <li><b>GD (Recommended)</b> - Used for file thumbnails and converting images for download.</li>
+      <li><b>Imagick (Helpful)</b> - Replacement for GD when not found and used for PDF image previews.</li>
       <li><b>Date (Helpful)</b> - The date extension is required for resolving file modification dates and other time-related events.</li>
       <li><b>EXIF (Helpful)</b> - EXIF is required for image property viewing.</li>
       <li><b>FileInfo (Helpful)</b> - Used for resolving some file properties and mime types.</li>
