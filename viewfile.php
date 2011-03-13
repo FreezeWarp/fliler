@@ -134,12 +134,12 @@ if ($perm['View']) {
 
       // Will be used if the overrride "frame" is used.
       case 2:
-      echo '<iframe src="' . $uploadUrl . $file . '" style="width: 100%; height: 400px;"></iframe><hr />Displayed with native browser plugins in a seperate frame.';
+      echo '<iframe src="' . $relativePath . '" style="width: 100%; height: 400px;"></iframe><hr />Displayed with native browser plugins in a seperate frame.';
       break;
 
       // Will be used if the overrided "object" is used.
       case 3:
-      echo '<object data="' . $uploadUrl . $file . '" style="width: 100%; height: 400px;" type="' . $fileData['mime'] . '"></object><hr />Displayed with native browser plugins.';
+      echo '<object data="' . $relativePath . '" style="width: 100%; height: 400px;" type="' . $fileData['mime'] . '"></object><hr />Displayed with native browser plugins.';
       break;
 
       case 4:
@@ -189,12 +189,12 @@ if ($perm['View']) {
 
       // Will be used if the file a video, or if the override "video" is used.
       case 11:
-      echo '<video src="' . $uploadUrl . $file . '" style="width: 800px; height: 600px;" controls="controls"></video><hr />Displayed with native browser HTML5 video.';
+      echo '<video src="' . $relativePath . '" style="width: 800px; height: 600px;" controls="controls"></video><hr />Displayed with native browser HTML5 video.';
       break;
 
       // Will be used if the file is a audio, or if the override "audio" is used.
       case 12:
-      echo '<audio src="' . $uploadUrl . $file . '" style="width: 400px;" controls="controls"></audio><hr />Displayed with native browser HTML5 audio.';
+      echo '<audio src="' . $relativePath . '" style="width: 400px;" controls="controls"></audio><hr />Displayed with native browser HTML5 audio.';
       break;
 
       case 13:
