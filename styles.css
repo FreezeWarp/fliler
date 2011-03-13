@@ -68,6 +68,10 @@ h4 {
 a < img {
   border: 0;
 }
+img[src=images\/info\.png] {
+  width: 16px; 
+  height: 16px;
+}
 
 input, button, textarea {
   background: transparent;

@@ -19,9 +19,7 @@ function upFiles(id) {
   var files = fileInput.files;
 
   // Remove prior entries to update things.
-  if (typeof $ != 'undefined') {
-    $("[x-parent=" + id + "]").remove();
-  }
+  $("[x-parent=" + id + "]").remove();
 
   if (files.length > 0) {
     for (var i = 0; i < files.length; i++) {
@@ -43,13 +41,9 @@ function handleFile(file,id) {
     metric += 1;
   }
   fileSizeFormatted = Math.round(fileSize) + fileSizes[metric];
+
   if (typeof FileReader == 'undefined') {
-    if (typeof $ == 'undefined') {
-      document.getElementById('filesList').innerHTML += '<tr x-parent="' + id + '"><td>' + fileName + '</td><td>' + fileSizeFormatted + '</td><td></td></tr>';
-    }
-    else {
-      $('#filesList').append('<tr x-parent="' + id + '"><td>' + fileName + '</td><td>' + fileSizeFormatted + '</td><td></td></tr>');
-    }
+    $('#filesList').append('<tr x-parent="' + id + '"><td>' + fileName + '</td><td>' + fileSizeFormatted + '</td><td></td></tr>');
   }
   else {
     var reader = new FileReader();
@@ -80,12 +74,8 @@ function handleFile(file,id) {
         break;
         default: fileContainer = ''; break;
       }
-      if (typeof $ == 'undefined') {
-        document.getElementById('filesList').innerHTML += '<tr x-parent="' + id + '"><td>' + fileName + '</td><td>' + fileSizeFormatted + '</td><td>' + fileContainer + '</td></tr>';
-      }
-      else {
-        $('#filesList').append('<tr x-parent="' + id + '"><td>' + fileName + '</td><td>' + fileSizeFormatted + '</td><td>' + fileContainer + '</td></tr>');
-      }
+
+      $('#filesList').append('<tr x-parent="' + id + '"><td>' + fileName + '</td><td>' + fileSizeFormatted + '</td><td>' + fileContainer + '</td></tr>');
     };
   }
 }
@@ -96,9 +86,7 @@ function upFiles2(id) {
   var file = fileInput.value;
 
   // Remove prior entries to update things.
-  if (typeof $ == 'undefined') {
-    $("[x-parent=" + id + "]").remove();
-  }
+  $("[x-parent=" + id + "]").remove();
 
   var fileType = fType(file);
   switch (fileType) {
@@ -114,12 +102,7 @@ function upFiles2(id) {
     default: var fileContainer =''; break;
   }
 
-  if (typeof $ == 'undefined') {
-    document.getElementById('filesList').innerHTML += '<tr x-parent="' + id + '"><td>' + file + '</td><td>?</td><td>' + fileContainer + '</td></tr>';
-  }
-  else {
-    $('#filesList').append('<tr x-parent="' + id + '"><td>' + file + '</td><td>?</td><td>' + fileContainer + '</td></tr>');
-  }
+  $('#filesList').append('<tr x-parent="' + id + '"><td>' + file + '</td><td>?</td><td>' + fileContainer + '</td></tr>');
 }
 
 /* Return the file type for use in a container.
@@ -149,13 +132,7 @@ function newField(fieldType) {
   inputInstance += 1;
   switch (fieldType) {
     case 0:
-    // The Jqueryless fallback is a little buggy - previous file entries are deleted.
-    if (typeof $ == 'undefined') {
-      filesBox.innerHTML += '<br /><input name="file[]" id="file[' + inputInstance + ']" onChange="upFiles(' + inputInstance + ')" type="file" multiple="multiple" x-child="' + inputInstance + '" />';
-    }
-    else {
-      $('#filesBox').append('<br /><input name="file[]" id="file[' + inputInstance + ']" onChange="upFiles(' + inputInstance + ')" type="file" multiple="multiple" x-child="' + inputInstance + '" />');
-    }
+    $('#filesBox').append('<br /><input name="file[]" id="file[' + inputInstance + ']" onChange="upFiles(' + inputInstance + ')" type="file" multiple="multiple" x-child="' + inputInstance + '" />');
     break;
     
     case 1:

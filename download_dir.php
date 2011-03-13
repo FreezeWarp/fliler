@@ -21,11 +21,11 @@ if ($stage <= 2) {
 function zipCreateString($files,$dir = '') {
   foreach ($files as $file) {
     if ($file['type'] == 'dir') {
-      $string .= '$zip->addEmptyDir(\'' . $dir . $file['file'] . '\');';
+      $string .= '$zip->addEmptyDir(\'' . addslashes($dir . $file['file']) . '\');';
       $string .= zipCreateString($file['contents'],$dir . $file['file'] . '/');
     }
     else {
-      $string .= '$zip->addFile(\'' . $file['full'] . '\',\'' . $dir . $file['file'] . '\');';
+      $string .= '$zip->addFile(\'' . addslashes($file['full']) . '\',\'' . addslashes($dir . $file['file']) . '\');';
     }
   }
   return $string;
@@ -68,6 +68,7 @@ if ($perm['View']) {
     $zip->open($tempFile,ZIPARCHIVE::CREATE);
 
     $string = zipCreateString($files);
+
     unset($files);
 
     eval($string);
