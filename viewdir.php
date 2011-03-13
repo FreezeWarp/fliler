@@ -73,26 +73,28 @@ $dirPath2 = 'You are currently in: <u><a href="viewdir.php?d=' . $cleanUrl . '">
 if ($perm['View']) {
   $data = listFiles($uploadDirectory . $dirPath,$n,$e,$lockedFiles,false,false,'seperate',array('lastMod' => true,'owner' => true,'size' => true,'ext' => true,'content' => 100));
 
-  foreach ($data['files'] AS $file) {
-    $i++;
+  if ($data['files']) {
+    foreach ($data['files'] AS $file) {
+      $i++;
 
-    switch ($s) {
-      case 'size':
-      $files[$file['size'][0] . $i] = $file;
-      break;
+      switch ($s) {
+        case 'size':
+        $files[$file['size'][0] . $i] = $file;
+        break;
 
-      case 'lastMod':
-      $files[$file['lastMod'][0] . $i] = $file;
-      break;
+        case 'lastMod':
+        $files[$file['lastMod'][0] . $i] = $file;
+        break;
 
-      case 'owner':
-      $files[$file['owner'] . $i] = $file;
-      break;
+        case 'owner':
+        $files[$file['owner'] . $i] = $file;
+        break;
 
-      case 'file':
-      default:
-      $files[$file['file'] . $i] = $file;
-      break;
+        case 'file':
+        default:
+        $files[$file['file'] . $i] = $file;
+        break;
+      }
     }
   }
 
@@ -106,7 +108,6 @@ if ($perm['View']) {
   }
 
   if ($data) {
-
     echo '<script src="viewdir.js"></script><div style="clear: both;"><div style="float: left; width: 49%;"><h3>' . $dirPath2 . '</h3><div class="toolbar" style="width: 240px;">';
     if (!$home) {
       $parentPath = parentDirectory($d);
