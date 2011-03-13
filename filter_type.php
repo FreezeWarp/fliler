@@ -10,7 +10,7 @@
 
 $exts = array(
   'audio' => array('aac','aif','au','cda','fla','m4a','midi','mp2','mp3','mpa','ogg','ra','raw','snd','wav','wma'),
-  'compressed' => array('7z','cab','deb','bz','bz2','gz','gzip','jar','pkg','rar','rpm','tar','tgz','zip'),
+  'compressed' => array('7z','cab','deb','bz','bz2','gz','gzip','jar','pkg','rar','rpm','tar','tgz','zip','cbz','cba','cb7','cbt','cbr'),
   'common' => array('avi','doc','exe','gif','htm','html','ini','mov','mp3','mp4','odt','php','png','ppt','wav','xls','zip'),
   'database' => array('accdb','accdt','csv','mdb','sql','wdb',),
   'dev' => array('bsh','c','cc','cpp','cs','java','jsp','lsp','mak','make','nt','pl','rb','sh','tcl','vb'),
@@ -19,7 +19,7 @@ $exts = array(
   'exec' => array('app','bin','com','exe','sh','vb','ws'),
   'fontcur' => array('ani','cur','fnt','fon','otf','ttf'),
   'game' => array('frz','gb','gba','gbc','gg','j64','jag','n64','nds','nes','npc','pj','rom','sav','smc','sms','srm','v64','xbe','xex','z64'),
-  'image' => array('ai','apng','art','bmf','bmp','cdr','csh','gif','ico','icon','img','jp2','jpe','jpeg','jpf','jpg','mng','msp','odg','pct','png','pps','psd','psp','raw','svg','tif','tiff','wmf','xcf'),
+  'image' => array('ai','apng','art','bmf','bmp','cdr','csh','gif','ico','icon','img','jp2','jpe','jpeg','jpf','jpg','mng','msp','odg','pct','png','pps','psd','psp','raw','svg','tif','tiff','wmf','xcf','cbz','cba','cb7','cbt','cbr'),
   'presentation' => array('kpr','odp','otp','pot','potx','pps','ppsm','ppsx','ppt','pptm','pptx','sti','sxi'),
   'settings' => array('cfg','ini','reg'),
   'spreadsheet' => array('123','csv','ksp','ods','ots','sdc','stc','sxc','wks','xls','xlsm','xlsx','xlt','xltx'),
