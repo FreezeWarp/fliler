@@ -144,7 +144,7 @@ if ($perm['View']) {
       if ($perm['MkF'] && $perm['MvF']) {
         echo '<a onclick="copyFiles(\'' . $dirPath . $file['file']. '\',\'file' . $fileid . '\');"><img src="images/copy.png" /></a><a onclick="cutFiles(\'' . $dirPath . $file['file']. '\',\'file' . $fileid . '\');"><img src="images/cut.png" /></a>';
       }
-      echo '<a href="download_file.php?stage=3&file=' . urlencode($dirPath . $file['file']) . '"><img src="images/save.png" /></a></td><td><img src="images/file.png" />&nbsp;<a href="viewfile.php?file=' . urlencode($dirPath . $file['file']) . '">' . wordwrap($file['file'],25,'<br />',true) . '</a></td><td>' . $file['lastMod'][1] . '</td><td>' . $file['owner'] . '</td><td>' . $file['size'][1] . '</td><td class="contentExcerpt">';
+      echo '<a href="download_file.php?stage=3&file=' . urlencode($dirPath . $file['file']) . '"><img src="images/save.png" /></a></td><td><img src="images/file.png" />&nbsp;<a href="viewfile.php?file=' . urlencode($dirPath . $file['file']) . '">' . wordwrap($file['file'],25,'<br />',true) . '</a> <a href="viewdir.php?d=zip:' . urlencode($dirPath . $file['file']) . $cleanUrl . '">(View as Dir)</a></td><td>' . $file['lastMod'][1] . '</td><td>' . $file['owner'] . '</td><td>' . $file['size'][1] . '</td><td class="contentExcerpt">';
       switch($file['ext']) {
         case 'png': case 'gif': case 'jpg': case 'jpeg': case 'svg':
         echo '<img src="' . $uploadUrl . $dirPath . $file['file'] . '" style="max-width: 40px; max-height: 40px;" />';
