@@ -25,8 +25,8 @@ if ($valid == 1) {
     case 2:
     case 'save':
       $contents = $_POST['contents'];
-      mysql_connect($mysqlHost,$mysqlUser,$mysqlPassword); mysql_select_db($mysqlDatabase);
-      if (mysql_query('UPDATE `' . $mysqlPrefix . 'users` SET `memo` = "' . mysql_real_escape_string($contents) . '" WHERE `username` = "' . $user['username'] . '"')) {
+      mysqlEscape($mysqlHost,$mysqlUser,$mysqlPassword,$mysqlDatabase);
+      if (mysqlQuery('UPDATE `' . $mysqlPrefix . 'users` SET `memo` = "' . mysqlEscape($contents) . '" WHERE `username` = "' . mysqlEscape($user['username']) . '"')) {
         echo container('Memo Updated','The memo has been successfully updated. <a href="memo.php?stage=1">Click here</a> to return to it.',0);
       }
     break;
