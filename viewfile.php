@@ -220,8 +220,8 @@ if ($perm['View']) {
       }
 
       echo '  <script src="viewfile.js"></script>
-  <img src="' . $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . '-0.jpg" id="image" onload="resizeLimits(\'image\')" /><br />
-  Page: ' . implode(' | ',$preview) . '<br />
+  <img src="' . $uploadUrl . $tmpPathLocal . '.fliler-' . $ut . '-' . safeFile($fileData['name']) . ($a > 0 ? '-0' : '') . '.jpg" id="image" onload="resizeLimits(\'image\')" /><br />
+  ' . ($preview ? 'Page: ' . implode(' | ',$preview) . '<br />' : '') . '
   Zoom: <input onchange="resizeImage(\'image\',(this.value / 100));" onkeyup="resizeImage(\'image\',(this.value / 100));" type="range" min="25" max="400" step="25" value="100" id="resizer" />%<hr />Generated with Imagick and Native-Browser HTML image.';
       break;
     }
