@@ -71,19 +71,19 @@ if ($perm['MngUsrs']) {
           while (false !== ($row = mysql_fetch_row($levels))) {
             $levelText .= '<option>' . $row[0] . '</option>';
           }
-          echo '<form action="manage_users.php?stage=2&action=new2" method="post"><table><tr><td>Username</td><td><input type="text" name="username" /></td></tr><tr><td>Password</td><td><input type="password" name="password" /></td></tr><tr><td>Access Directory (Optional)</td><td><input type="text" name="accessDirectory" /></td></tr><tr><td>Access Level</td><td><select name="accessLevel">' . $levelText . '</select></td></tr></table><br /><br /><input type="submit" value="Add" /></form>';
+          echo '<form action="manage_users.php?stage=2&action=new2" method="post"><table><tr><td>Username</td><td><input type="text" name="newusername" /></td></tr><tr><td>Password</td><td><input type="password" name="newpassword" /></td></tr><tr><td>Access Directory (Optional)</td><td><input type="text" name="newaccessDirectory" /></td></tr><tr><td>Access Level</td><td><select name="newaccessLevel">' . $levelText . '</select></td></tr></table><br /><br /><input type="submit" value="Add" /></form>';
         break;
         case 'new2':
           echo '<b>Add a New User</b><br />';
           // Generate a random string.
           $salt = randomString(5);
           if (mysql_query('INSERT INTO `' . $mysqlPrefix . 'users`
-			   SET `username` = "' . $_POST['username'] . '",
+			   SET `username` = "' . mysqlEscape($_POST['newusername']) . '",
 			       `salt` = "' . $salt . '",
-			       `password` = "' . md5(md5($_POST['password']) . $salt) . '",
-			       `accessDirectory` = "' . $_POST['accessDirectory'] . '",
-                               `accessLevel` = "' . $_POST['accessLevel'] . '"')) {
-            echo 'The user has been successfully added with the following information:<br /><br /><table><tr><td>Username:</td><td>' . $_POST['username'] . '</td></tr><tr><td>Password:</td><td>' . $_POST['password'] . '</td></tr><tr><td>Access Directory</td><td>' . $_POST['accessDirectory'] . '</td></tr><tr><td>Access Level</td><td>' . $_POST['accessLevel'] . '</td></tr></table><br /><br /><a href="manage_users.php">Click here</a> to return to managing users.';
+			       `password` = "' . md5(md5($_POST['newnpassword']) . $salt) . '",
+			       `accessDirectory` = "' . mysqlEscape($_POST['newaccessDirectory']) . '",
+                               `accessLevel` = "' . intval($_POST['newaccessLevel']) . '"')) {
+            echo 'The user has been successfully added with the following information:<br /><br /><table><tr><td>Username:</td><td>' . $_POST['newusername'] . '</td></tr><tr><td>Password:</td><td>' . $_POST['newpassword'] . '</td></tr><tr><td>Access Directory</td><td>' . $_POST['newaccessDirectory'] . '</td></tr><tr><td>Access Level</td><td>' . $_POST['newaccessLevel'] . '</td></tr></table><br /><br /><a href="manage_users.php">Click here</a> to return to managing users.';
           }
           else {
             echo 'The user could not be added. <a href="manage_users.php">Click here</a> to return to managing users.';

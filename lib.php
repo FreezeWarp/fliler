@@ -12,6 +12,7 @@
  * Guess what?! - Time to go OOP. All new functions should be OOP, and we should gradually convert the rest of it to OOP. Finish goal of Beta 6. */
 
 require('libold.php'); // Functions depreciated that may be removed soon.
+require('mysql.php'); // MySQL Lib
 
 class fileManager {
   public function __construct() {
