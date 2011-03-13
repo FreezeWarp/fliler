@@ -676,8 +676,12 @@ function fileData($dir,$file,$data = array('backup' => true,'dot' => true,'size'
     echo 'Fliler Backup Mode';
   }
   elseif (strstr($dir,'zip:')) {
-    $filePath = preg_replace('/(.+)zip:(.+)\//','$1$2',$dir);
+//    $filePath = preg_replace('/(.+)zip:(.+)\//','$1$2',$dir);
+
+    $filePath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$1$2$3',$dir);
+    $dirPath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$4',$dir);
     $fileData = fileData(null, $filePath);
+
     $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
     if (is_dir($dest) && !$zipRecreateDir) {
 
@@ -686,7 +690,7 @@ function fileData($dir,$file,$data = array('backup' => true,'dot' => true,'size'
       unzip(null,$fileData['full'],$dest);
     }
 
-    return fileData($dest,$file,$data);
+    return fileData($dest . $dirPath,$file,$data);
   }
   else {
   if (lockedFile($dir . $file)) {
@@ -837,7 +841,7 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     echo 'Fliler Backup Mode';
   }
   elseif (strstr($dir,'zip:')) {
-    echo $filePath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$1$2$3',$dir);
+    $filePath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$1$2$3',$dir);
     $dirPath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$4',$dir);
     $fileData = fileData(null, $filePath);
 
