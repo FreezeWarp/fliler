@@ -96,14 +96,17 @@ if ($perm['View']) {
     }
   }
 
-  if ($r) {
-    krsort($files);
-  }
-  else {
-    ksort($files);
+  if ($files) {
+    if ($r) {
+      krsort($files);
+    }
+    else {
+      ksort($files);
+    }
   }
 
-  if ($files) {
+  if ($data) {
+
     echo '<script src="viewdir.js"></script><div style="clear: both;"><div style="float: left; width: 49%;"><h3>' . $dirPath2 . '</h3><div class="toolbar" style="width: 240px;">';
     if (!$home) {
       $parentPath = parentDirectory($d);
