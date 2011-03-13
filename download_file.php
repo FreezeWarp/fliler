@@ -65,9 +65,12 @@ if ($perm['View']) {
         }
         break;
 
-        default:
         case 'svg':
         $options .= '<option value="png">Portable Network Graphics (PNG)</option><option value="jpg">JPEG Format</option><option value="tiff">Tagged Image File Format (TIFF)</option><option value="pdf">Adobe Acrobat PDF</option>';
+        break;
+
+        default:
+        header("Location: download_file.php?stage=3&file=$file&dir=$dir");
         break;
       }
 
