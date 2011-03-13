@@ -67,42 +67,38 @@ if ($username) {
   // Only proceed if the captcha data was valid or not presented.
   if ($recaptchaValid) {
     // Try to establish a connection with MySQL.
-    $connection = mysql_connect($mysqlHost,$mysqlUser,$mysqlPassword);
-    if ($connection) {
-      if (mysql_select_db($mysqlDatabase,$connection)) {
-        // Get the user information.
-        $user = @mysql_fetch_assoc(@mysql_query('SELECT * FROM `' . $mysqlPrefix . 'users` WHERE `username` = "' . mysql_real_escape_string($username) . '"'));
-        // If the password is valid.
-        if (md5(md5($password) . $user['salt']) == $user['password']) {
-          $valid = 1;
-          $accessLevel = $user['accessLevel'];
-          $accessDirectory = $user['accessDirectory'];
-          $perm = @mysql_fetch_assoc(@mysql_query('SELECT * FROM `' . $mysqlPrefix . 'levels` WHERE `id` = "' . $accessLevel . '"'));
-          if ($perm['FileWhiteList']) {
-            $extwl = explode(',',$perm['FileWhiteList']);
-          }
-
-          // Set the cookies to expire two days from now, to avoid possible localization bugs. We'll later check an expireDate cookie to see whether its still valid or not.
-          $expire = time() + 30 * 60 * 24 * 2;
-
-          // If we can, encrypt the password before storing it.
-          if ($blowfish) {
-            $iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH,MCRYPT_MODE_ECB);
-            $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-
-            $password = mcrypt_encrypt(MCRYPT_BLOWFISH, $blowfish, $password, MCRYPT_MODE_ECB, $iv);
-            setcookie('iv',$iv,$expire);
-          }
-
-          // Update the cookies with the added expiration time.
-          setcookie('username',$username,$expire);
-          setcookie('password',$password,$expire);
-          setcookie('expireDate',time() + 30 * 60,$expire);
+    if (mysqlConnect($mysqlHost,$mysqlUser,$mysqlPassword,$mysqlDatabase)) {
+      // Get the user information.
+      $user = sqlArr('SELECT * FROM `' . $mysqlPrefix . 'users` WHERE `username` = "' . mysqlEscape($username) . '"');
+      // If the password is valid.
+      if (md5(md5($password) . $user['salt']) == $user['password']) {
+        $valid = 1;
+        $accessLevel = $user['accessLevel'];
+        $accessDirectory = $user['accessDirectory'];
+        $perm = sqlArr('SELECT * FROM `' . $mysqlPrefix . 'levels` WHERE `id` = "' . $accessLevel . '"');
+        if ($perm['FileWhiteList']) {
+          $extwl = explode(',',$perm['FileWhiteList']);
         }
-        else { $valid = -1; }
+
+        // Set the cookies to expire two days from now, to avoid possible localization bugs. We'll later check an expireDate cookie to see whether its still valid or not.
+        $expire = time() + 30 * 60 * 24 * 2;
+
+        // If we can, encrypt the password before storing it.
+        if ($blowfish) {
+          $iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH,MCRYPT_MODE_ECB);
+          $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+
+          $password = mcrypt_encrypt(MCRYPT_BLOWFISH, $blowfish, $password, MCRYPT_MODE_ECB, $iv);
+          setcookie('iv',$iv,$expire);
+        }
+
+        // Update the cookies with the added expiration time.
+        setcookie('username',$username,$expire);
+        setcookie('password',$password,$expire);
+        setcookie('expireDate',time() + 30 * 60,$expire);
       }
-      else { trigger_error('The MySQL database specified in config.php could not be connected to.',E_USER_ERROR); }
-      mysql_close();
+      else { $valid = -1; }
+      mysqlClose();
     }
     // If no connection could be establish, run through the nomysql login. Don't run through if $nomysqlUsername evaluates to false.
     else {
@@ -133,6 +129,8 @@ else {
 }
 
 if (($valid !== 1) && (!isset($stopLogin))) {
-  require_once('uac2.php'); ob_end_flush(); die();
+  require_once('uac2.php');
+  ob_end_flush();
+  die();
 }
 ?>
