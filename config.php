@@ -178,7 +178,7 @@ $staticExpires = 60 * 60 * 24 * 30;
 
 /* ZIP Recreate Dir
  * Set this to true to recreate ZIP directories on each and every load. */
-$zipRecreateDir = true;
+$zipRecreateDir = false;
 
 /* Create Backups
  * Certain actions will make a backup incase something went wrong. These can then be cleared out or restored later.

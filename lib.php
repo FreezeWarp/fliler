@@ -675,11 +675,9 @@ function fileData($dir,$file,$data = array('backup' => true,'dot' => true,'size'
   elseif (strstr($dir,'flilerBackup:')) {
     echo 'Fliler Backup Mode';
   }
-  elseif (strstr($dir,'zip:')) {
-//    $filePath = preg_replace('/(.+)zip:(.+)\//','$1$2',$dir);
-
-    $filePath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$1$2$3',$dir);
-    $dirPath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$4',$dir);
+  elseif (strstr($dir,'zip:')) { die('1');
+    $filePath = preg_replace('/(.+)zip:(.+)(\.zip|\.cbz)\/(.+)/','$1$2$3',$dir);
+    $dirPath = preg_replace('/(.+)zip:(.+)(\.zip|\.cbz)\/(.+)/','$4',$dir);
     $fileData = fileData(null, $filePath);
 
     $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
@@ -841,8 +839,8 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     echo 'Fliler Backup Mode';
   }
   elseif (strstr($dir,'zip:')) {
-    $filePath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$1$2$3',$dir);
-    $dirPath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$4',$dir);
+    $filePath = preg_replace('/(.*)zip:(.*)(\.zip)\/(.*)/','$1$2$3',$dir);
+    $dirPath = preg_replace('/(.*)zip:(.*)(\.zip)\/(.*)/','$4',$dir);
     $fileData = fileData(null, $filePath);
 
     $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
