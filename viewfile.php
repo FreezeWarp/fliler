@@ -156,7 +156,7 @@ if ($perm['View']) {
       case 6:
       echo '  <!-- For browsers compatible with HTML5 forms, a slider will be displayed, with limits later adjusted by Javascript depending on the images size and the image adjusted with the onchange property. For browsers incompatible, a textbox will be displayed without any limits and the image will be adjusted with the onkeyup property. -->
   <script src="viewfile.js"></script>
-  <img src="' . $uploadUrl . $file . '" id="image" onload="resizeLimits(\'image\')" /><br />
+  <img src="' . $relativePath . '" id="image" onload="resizeLimits(\'image\')" /><br />
   Zoom: <input onchange="resizeImage(\'image\',(this.value / 100));" onkeyup="resizeImage(\'image\',(this.value / 100));" type="range" min="25" max="400" step="25" value="100" id="resizer" />%<hr />
   Generated with native-browser HTML image.
 ';
