@@ -1,5 +1,5 @@
 <?php
-/* Copyright (c) 2009 by Joseph Parsons
+/* Copyright (c) 2011 by Joseph Parsons
 
  * This file is a part of Fliler.
  * Fliler is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -257,7 +257,7 @@ The Fliler file management API is early in the works and not yet used through mo
 </div>
 
 <h2 id="copyright">Copyright</h2>
-Fliler is copyright Joseph T. Parsons, 2010, except where otherwise noted. Fliler is licensed as GPLv3 - this means you are free to use any portion of Fliler for your own projects, be it commercial or non-profit, as long as you follow the terms of the GPLv3 (which usually means making all source available), and the Fliler Library (see above) is licensed under the LGPLv3 (which is more permissive than normal GPLv3).<br /><br />
+Fliler is copyright Joseph T. Parsons, 2011, except where otherwise noted. Fliler is licensed as GPLv3 - this means you are free to use any portion of Fliler for your own projects, be it commercial or non-profit, as long as you follow the terms of the GPLv3 (which usually means making all source available), and the Fliler Library (see above) is licensed under the LGPLv3 (which is more permissive than normal GPLv3).<br /><br />
 
 Several included libraries also use a version of GPL or other compatible license, including jQuery (the standard Javascript animation library used throughout), geSHi, the code highlighting library used for viewing code files, and CKEditor, the advanced WYSIWYG editor that can be used to edit documents. reCAPTCHA is licensed under the MIT license (which is even less restrictive than the LGPL, and compatible with the GPL)<br /><br />
 

@@ -3,7 +3,6 @@ Beta 6:
 * Add Logging (Both Database and Text File)
 * Test and fix all bugs related to user base directories (Beta 5 regression).
 * MySQLi (WIP)
-* Copyright 2010 (WIP)
 
 Beta 7:
 * Directory Viewer Column Sorting
