@@ -515,7 +515,7 @@ function createDir($dir,$overwrite = 0,$perm = 0777) {
         if(!deleteDir($dir)) { trigger_error($dir . ' already exists and cannot be deleted.',E_USER_ERROR); return false; }
       }
     }
-    if(mkdir($dir,$perm)) { return true; }
+    if(mkdir($dir,$perm)) {  }
     else { trigger_error($dir . ' can not be created for unknown reasons.',E_USER_ERROR); return false; }
   }
 }
@@ -737,6 +737,43 @@ function filePart($path) {
   return $finalPiece;
 }
 
+function unzip($dir,$file,$dest) {
+  global $uploadDirectory, $tmpPathLocal;
+
+  if (!$dir) {
+    $dir = parentDirectory($file);
+    $file = filePart($file);
+  }
+  else {
+    $dir = formatDir($dir);
+  }
+
+  if (!$dest) {
+    $dest = $uploadDirectory . $tmpPathLocal . $file . '/';
+  }
+
+  if (lockedFile($dir . $file)) {
+    trigger_error($dir . $file . ' is protected.',E_USER_ERROR);
+    return false;
+  }
+  elseif (!file_exists($dir . $file)) {
+    trigger_error($dir . $file . ' does not exist.',E_USER_ERROR);
+    return false;
+  }
+  else {
+    $zip = new ZipArchive;
+    $zipFile = $zip->open($dir . $file);
+    if ($zipFile === true) {
+      $zip->extractTo($dest);
+    }
+    else {
+      trigger_error($dir . $file . ' could not be opened.',E_USER_ERROR);
+    }
+
+    $zip->close();
+  }
+}
+
 /* List Files Function
  ** Parameters **
  * $dir - The directory to scan.
@@ -756,7 +793,7 @@ function filePart($path) {
  * $hideDotFiles - Whether or not dot files should be hidden.
  * $memorySafety - Will attempt exit if nearing PHP out-of-memory. */
 function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null,$type = false,$recursive = false,$mode = false,$data = array('backup' => true,'dot' => true,'size' => true,'lastMod' => true,'ext' => true,'name' => true,'owner' => true,'mime' => false,'content' => false)) {
-  global $ignoreBackupSyntax, $hideDotFiles;
+  global $ignoreBackupSyntax, $hideDotFiles, $uploadDirectory, $tmpPathLocal;
 
   // Create the file and dir containers.
   $files = array();
@@ -768,6 +805,29 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     $nameFilter = filePart($nameFilter);
   }
 
+  // FTP Directory
+  if (strstr($dir,'ftp:')) {
+    echo 'FTP Mode';
+  }
+  elseif (strstr($dir,'flilerBackup:')) {
+    echo 'Fliler Backup Mode';
+  }
+  elseif (strstr($dir,'zip:')) {
+    //echo 'Zip File Mode';
+
+    $filePath = preg_replace('/(.+)zip:(.+)\//','$1$2',$dir);
+    $fileData = fileData(null, $filePath);
+    $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
+    if (is_dir($dest)) {
+
+    }
+    else {
+      unzip(null,$fileData['full'],$dest);
+    }
+
+    return listFiles($dest,$nameFilter,$extFilter,$hiddenFiles,$type,$recursive,$mode,$data);
+  }
+  else {
   // Make sure the directory exists.
   if (is_dir($dir)) {
     // Glob is considerably faster than either scandir or readdir. It also is fairly extensible, so filters are easier to implement.
@@ -776,22 +836,9 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     $extString = (!empty($extFilter) ? '.{' . $extFilter . '}' . ($ignoreBackupSyntax ? '' : '{,~}*') : null);
     $dotString = (($hideDotFiles) ? '' : '{,.}');
 
-    // FTP Directory
-    if (strstr($dir,'ftp:')) {
-      echo 'FTP Mode';
-    }
-    elseif (strstr($dir,'flilerBackup:')) {
-      echo 'Fliler Backup Mode';
-    }
-    elseif (strstr($dir,'zip:')) {
-      echo 'Zip File Mode';
-    }
-    // Normal Directory
-    else {
-      if ($type === 'dir') $flags = GLOB_BRACE|GLOB_ONLYDIR;
-      else $flags = GLOB_BRACE;
-      $dirFiles = glob($dir . $dotString . $nameString . $extString,$flags);
-    }
+    if ($type === 'dir') $flags = GLOB_BRACE|GLOB_ONLYDIR;
+    else $flags = GLOB_BRACE;
+    $dirFiles = glob($dir . $dotString . $nameString . $extString,$flags);
 
     foreach ($dirFiles as $file) {
       // Glob returns whole file names, so remove the directory from the file.
@@ -851,6 +898,7 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
   else {
     trigger_error($dir . ' does not exist.',E_USER_ERROR);
     return false;
+  }
   }
 }
 
