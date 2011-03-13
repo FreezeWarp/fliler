@@ -658,6 +658,7 @@ function getMime($dir,$file) {
 
 /* fileData(string $dir, string $file) */
 function fileData($dir,$file,$data = array('backup' => true,'dot' => true,'size' => true,'lastMod' => true,'ext' => true,'name' => true,'owner' => true,'mime' => false,'content' => false)) {
+  global $uploadDirectory, $tmpPathLocal, $zipRecreateDir;
   if (!$dir) {
     $dir = parentDirectory($file);
     $file = filePart($file);
@@ -666,6 +667,28 @@ function fileData($dir,$file,$data = array('backup' => true,'dot' => true,'size'
     $dir = formatDir($dir);
   }
 
+
+  // FTP Directory
+  if (strstr($dir,'ftp:')) {
+    echo 'FTP Mode';
+  }
+  elseif (strstr($dir,'flilerBackup:')) {
+    echo 'Fliler Backup Mode';
+  }
+  elseif (strstr($dir,'zip:')) {
+    $filePath = preg_replace('/(.+)zip:(.+)\//','$1$2',$dir);
+    $fileData = fileData(null, $filePath);
+    $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
+    if (is_dir($dest) && !$zipRecreateDir) {
+
+    }
+    else {
+      unzip(null,$fileData['full'],$dest);
+    }
+
+    return fileData($dest,$file,$data);
+  }
+  else {
   if (lockedFile($dir . $file)) {
     trigger_error($dir . $file . ' is protected.',E_USER_ERROR);
     return false;
@@ -709,6 +732,7 @@ function fileData($dir,$file,$data = array('backup' => true,'dot' => true,'size'
     $return['dir'] = $dir;
 
     return $return;
+  }
   }
 }
 
@@ -793,7 +817,7 @@ function unzip($dir,$file,$dest) {
  * $hideDotFiles - Whether or not dot files should be hidden.
  * $memorySafety - Will attempt exit if nearing PHP out-of-memory. */
 function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null,$type = false,$recursive = false,$mode = false,$data = array('backup' => true,'dot' => true,'size' => true,'lastMod' => true,'ext' => true,'name' => true,'owner' => true,'mime' => false,'content' => false)) {
-  global $ignoreBackupSyntax, $hideDotFiles, $uploadDirectory, $tmpPathLocal;
+  global $ignoreBackupSyntax, $hideDotFiles, $uploadDirectory, $tmpPathLocal, $zipRecreateDir;
 
   // Create the file and dir containers.
   $files = array();
@@ -813,12 +837,10 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     echo 'Fliler Backup Mode';
   }
   elseif (strstr($dir,'zip:')) {
-    //echo 'Zip File Mode';
-
     $filePath = preg_replace('/(.+)zip:(.+)\//','$1$2',$dir);
     $fileData = fileData(null, $filePath);
     $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
-    if (is_dir($dest)) {
+    if (is_dir($dest) && !$zipRecreateDir) {
 
     }
     else {
