@@ -19,17 +19,17 @@ echo documentStart('Fliler Changelog');
 <div id="content">
 <h2>Changelog</h2>
 <ol>
-<li><a href="#dev9">Dev 9</a></li>
-<li><a href="#dev10">Dev 10</a></li>
-<li><a href="#dev11">Dev 11</a></li>
-<li><a href="#dev12">Dev 12</a></li>
-<li><a href="#dev13">Dev 13</a></li>
-<li><a href="#dev14">Dev 14</a></li>
-<li><a href="#beta1">Beta 1</a></li>
-<li><a href="#beta2">Beta 2</a></li>
-<li><a href="#beta3">Beta 3</a></li>
-<li><a href="#beta4">Beta 4</a></li>
-<li><a href="#beta5">Beta 5</a></li>
+  <li><a href="#dev9">Dev 9</a></li>
+  <li><a href="#dev10">Dev 10</a></li>
+  <li><a href="#dev11">Dev 11</a></li>
+  <li><a href="#dev12">Dev 12</a></li>
+  <li><a href="#dev13">Dev 13</a></li>
+  <li><a href="#dev14">Dev 14</a></li>
+  <li><a href="#beta1">Beta 1</a></li>
+  <li><a href="#beta2">Beta 2</a></li>
+  <li><a href="#beta3">Beta 3</a></li>
+  <li><a href="#beta4">Beta 4</a></li>
+  <li><a href="#beta5">Beta 5</a></li>
 </ol>
 <h2 id="dev9">Dev 9</h2>
 <u>File Filtering:</u> You can now filter files listed in the directory browser by either their type or a combination of their name and file extension<br />
