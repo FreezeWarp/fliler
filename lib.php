@@ -959,27 +959,32 @@ function cleanDirUrl($f,$e,$n,$t) {
 }
 
 function highlightCode($dir,$file,$geshiPath = '.geshi/geshi.php') {
-  require_once($geshiPath);
   if ($dir) { $dir = formatDir($dir); $file = $dir . $file; }
+  $data = fileData(null,$file,array('name' => true, 'content' => true, 'ext' => true));
 
-  $data = @fileData(null,$file,array('name' => true, 'content' => true, 'ext' => true));
+  if (is_file($geshiPath)) {
+    require_once($geshiPath);
 
-  // The second parameter "Language" is unrequired and will be disregarded shortly.
-  $geshi = new GeSHi ($data['content'],'php');
-  $lang = $geshi->get_language_name_from_extension($data['ext']);
-  /* If GeSHi is unable to determine the file language, return plain text. */
-  if ($lang == '') {
-    $geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
-    $geshi->set_language('');
-    $content = $geshi->parse_code();
+    // The second parameter "Language" is unrequired and will be disregarded shortly.
+    $geshi = new GeSHi ($data['content'],'php');
+    $lang = $geshi->get_language_name_from_extension($data['ext']);
+    /* If GeSHi is unable to determine the file language, return plain text. */
+    if ($lang == '') {
+      $geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
+      $geshi->set_language('');
+      $content = $geshi->parse_code();
+    }
+    else {
+      $geshi->enable_classes();
+      $geshi->set_language($lang);
+      $geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
+      $content = $geshi->parse_code();
+    }
+    return '<link rel="stylesheet" type="text/css" href=".geshi/geshi_styles.css" />' . $content;
   }
   else {
-    $geshi->enable_classes();
-    $geshi->set_language($lang);
-    $geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
-    $content = $geshi->parse_code();
+    return nl2br($data['content']);
   }
-  return '<link rel="stylesheet" type="text/css" href=".geshi/geshi_styles.css" />' . $content;
 }
 
 function randomString($length = 4) {
