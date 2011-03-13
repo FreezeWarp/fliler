@@ -30,10 +30,10 @@ if (isset($_GET['f'])) $f = $_GET['f'];
 if (isset($_GET['d'])) $d = $_GET['d'];
 if ($f != 2) {
   $f = 1;
-  $e = explode(',',$e);
+  if ($e) $e = explode(',',$e);
 }
 else {
-  $e = $exts[$t];
+  if ($e) $e = $exts[$t];
 }
 $dirPath = formatDir(urldecode($d));
 $cleanUrl = cleanDirUrl($f,@implode(',',$e),$n,$t);
