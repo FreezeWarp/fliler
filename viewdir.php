@@ -52,8 +52,7 @@ switch($fileExtensionLookup) {
     $fileTypes[$fileTypeData[0]] = $fileTypeData;
   }
   case 'table':
-  @mysql_connect($mysqlHost,$mysqlUser,$mysqlPassword);
-  @mysql_select_db($mysqlDatabase);
+  mysqlConnect($mysqlHost,$mysqlUser,$mysqlPassword,$mysqlDatabase);
   break;
 }
 
