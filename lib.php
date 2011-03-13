@@ -947,14 +947,20 @@ function formatDir($dir,$special = false) {
   return $dir;
 }
 
-function cleanDirUrl($f,$e,$n,$t) {
+function cleanDirUrl($f,$e,$n = '',$t = '',$s = '',$r = '') {
   static $path;
+  $path = '';
+
   if ($f) {
     $path .= '&f=' . $f;
     if ($e) { $path .= '&e=' . $e; }
     if ($n) { $path .= '&n=' . $n; }
   }
   elseif (isset($t)) { $path .= '&t=' . $t; }
+
+  if ($s) { $path .= '&s=' . $s; }
+  if ($r) { $path .= '&r=' . $r; }
+
   return $path;
 }
 
