@@ -837,8 +837,10 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     echo 'Fliler Backup Mode';
   }
   elseif (strstr($dir,'zip:')) {
-    $filePath = preg_replace('/(.+)zip:(.+)\//','$1$2',$dir);
+    $filePath = preg_replace('/(.+)zip:(.+)\/(.+)/','$1$2',$dir);
+    $dirPath = preg_replace('/(.+)zip:(.+)\/(.+)/','$3',$dir);
     $fileData = fileData(null, $filePath);
+
     $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
     if (is_dir($dest) && !$zipRecreateDir) {
 
@@ -847,7 +849,7 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
       unzip(null,$fileData['full'],$dest);
     }
 
-    return listFiles($dest,$nameFilter,$extFilter,$hiddenFiles,$type,$recursive,$mode,$data);
+    return listFiles($dest . $dirPath,$nameFilter,$extFilter,$hiddenFiles,$type,$recursive,$mode,$data);
   }
   else {
   // Make sure the directory exists.
