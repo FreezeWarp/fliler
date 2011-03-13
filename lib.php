@@ -837,8 +837,8 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     echo 'Fliler Backup Mode';
   }
   elseif (strstr($dir,'zip:')) {
-    $filePath = preg_replace('/(.+)zip:(.+)\/(.+)/','$1$2',$dir);
-    $dirPath = preg_replace('/(.+)zip:(.+)\/(.+)/','$3',$dir);
+    echo $filePath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$1$2$3',$dir);
+    $dirPath = preg_replace('/(.+)zip:(.+)(\.zip)\/(.+)/','$4',$dir);
     $fileData = fileData(null, $filePath);
 
     $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
