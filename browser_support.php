@@ -25,8 +25,7 @@ echo documentStart('Browser Support');
 <h2 id="recommended">Recommended Browsers</h2>
   <ol>
     <li><a href="http://www.mozilla.com/en-US/firefox/firefox.html">Mozilla Firefox 3.6</a></li>
-    <li><a href="http://www.google.com/chrome">Google Chrome 3</a></li>
-    <li><a href="http://www.apple.com/safari/download/">Apple Safari 4</a></li>
+    <li><a href="http://www.google.com/chrome">Google Chrome</a></li>
   </ol>
 
 <h2 id="bugs">Browser Support Bugs</h2>
@@ -53,9 +52,9 @@ echo documentStart('Browser Support');
 
     <tr>
       <td>Google Chrome</td>
-      <td>&le;5</td>
-      <td>6</td>
-      <td>7</td>
+      <td>&le;9</td>
+      <td>10</td>
+      <td>11</td>
     </tr>
 
     <tr>
@@ -74,8 +73,8 @@ echo documentStart('Browser Support');
 
     <tr>
       <td>Opera</td>
-      <td>&le;10.50</td>
-      <td>10.60</td>
+      <td>&le;10.60</td>
+      <td>11.0</td>
       <td>&nbsp;</td>
     </tr>
   </table>
@@ -116,7 +115,7 @@ switch ($browser->browser) {
   break;
 
   case 'safari':
-  if ($browser->majorVersion >= 4) {
+  if ($browser->majorVersion >= 5) {
     echo 'You are using an up-to-date version of Apple Safari. Apple Safari is not tested heavily to work with Fliler, but its modern use of the opensource WebKit engine helps ensure support of it.';
   }
   else {
@@ -125,7 +124,7 @@ switch ($browser->browser) {
   break;
 
   case 'chrome':
-  if ($browser->majorVersion >= 6) {
+  if ($browser->majorVersion >= 10) {
     echo 'You are using an up-to-date version of Google Chrome or Chromium.';
   }
   else {
@@ -134,13 +133,8 @@ switch ($browser->browser) {
   break;
 
   case 'opera':
-  if ($browser->majorVersion == 10) {
-    if ($browser->minorVersion >= 60) {
-      echo 'You are using an up-to-date version of Opera 10. However, Opera is not used for testing, and may not be fully supported. While it should still work, keep in mind theremay be some bugs.';
-    }
-    else {
-      echo 'You are using an old version of Opera 10. Opera is not used for testing, and an old version may worsen support..';
-    }
+  if ($browser->majorVersion >= 11) {
+    echo 'You are using an up-to-date version of Opera 11. However, Opera is not used for testing, and may not be fully supported. While it should still work, keep in mind theremay be some bugs.';
   }
   else {
     echo 'You are using an old version of Opera. We recommend upgrading or switching to one of the browsers listed above..';
@@ -155,7 +149,7 @@ switch ($browser->browser) {
 echo '
   <div style="padding-left: 50px;">
   <h3>Browser Details</h3>
-    <b>Browser:</b> ' . $browser->browserClass . ' (Specifically ' . $browser->browser . ')<br />
+    <b>Browser:</b> ' . $browser->browserClass . ' (specifically ' . $browser->browser . ')<br />
     <b>Version:</b> ' . $browser->version . '<br />
     <b>Major Version:</b> ' . $browser->majorVersion . '<br />
     <b>Minor Version:</b> ' . $browser->minorVersion . '<br />
