@@ -65,7 +65,13 @@ if ($valid == 1) {
       trigger_error('The file "config.php" is writable by the server. It is highly recommended that you chmod the file 400 to prevent Fliler from being used maliciously by a third party.',E_USER_WARNING);
     }
   }
-  echo container('Developer Memo: Beta 6','<ol><li>Remove E_NOTICE errors (good practice).</li><li>Change all SQL queries to MySQLi (may break some functionality during conversion).</li><li>Add logging of all actions (support both MySQLi and off-site Log Files).</li><li>Convert File Copyrights to 2010.</li><li>Add full IE8 compatibility.</li></ol>See <a href="./todo">todo</a> for more.',0);
+  echo container('Developer Memo: Beta 6','<ol>
+  <li>Remove E_NOTICE errors (good practice).</li>
+  <li>Change all SQL queries to MySQLi (may break some functionality during conversion).</li>
+  <li>Add logging of all actions (support both MySQLi and off-site Log Files).</li>
+  <li>Add full IE8 compatibility.</li>
+</ol>
+See <a href="./todo">todo</a> for more.',0);
   echo '<div style="float: left; width: 49%;">';
   echo container('File Management Tasks','<ol>' . $options['fileManagement'] . '</ol>',0);
   echo '</div><div style="float: right; width: 49%;">';
