@@ -42,20 +42,6 @@ $dirPath = formatDir(urldecode($d));
 $cleanUrl = cleanDirUrl($f,@implode(',',$e),$n,$t,$s,$r);
 //else $e = array([0] = false);
 
-/* File Extension Lookup Prepartion */
-switch($fileExtensionLookup) {
-  case 'file':
-  $fileTypes2 = file_get_contents('file_extensions.csv');
-  $fileTypes3 = split("\n",$fileTypes2);
-  foreach ($fileTypes3 as $fileType) {
-    $fileTypeData = split("\t",$fileType);
-    $fileTypes[$fileTypeData[0]] = $fileTypeData;
-  }
-  case 'table':
-  mysqlConnect($mysqlHost,$mysqlUser,$mysqlPassword,$mysqlDatabase);
-  break;
-}
-
 echo documentStart('View a Directory');
 
 /* Document Content */
