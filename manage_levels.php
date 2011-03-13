@@ -54,19 +54,19 @@ if ($perm['MngLvls']) {
       break;
       case 'add2':
       if (mysql_query('INSERT INTO `' . $mysqlPrefix . 'levels`
-		       SET `MkF` = ' . $_POST['MkF'] . ',
-			   `MvF` = ' . $_POST['MvF'] . ',
-			   `EdF` = ' . $_POST['EdF'] . ',
-			   `RmF` = ' . $_POST['RmF'] . ',
-			   `ChmdF` = ' . $_POST['ChmdF'] . ',
-			   `MkD` = ' . $_POST['MkD'] . ',
-			   `MvD` = ' . $_POST['MvD'] . ',
-			   `RmD` = ' . $_POST['RmD'] . ',
-			   `ChmdD` = ' . $_POST['ChmdD'] . ',
-			   `View` = ' . $_POST['View'] . ',
-			   `MngUsrs` = ' . $_POST['MngUsrs'] . ',
-			   `MngLvls` = ' . $_POST['MngLvls'] . ',
-			   `MngBckps` = ' . $_POST['MngBckps'])) {
+		       SET `MkF` = "' . ($_POST['MkF'] ? 1 : 0) . '",
+			   `MvF` = "' . ($_POST['MvF'] ? 1 : 0) . '",
+			   `EdF` = "' . ($_POST['EdF'] ? 1 : 0) . '",
+			   `RmF` = "' . ($_POST['RmF'] ? 1 : 0) . '",
+			   `ChmdF` = "' . ($_POST['ChmdF'] ? 1 : 0) . '",
+			   `MkD` = "' . ($_POST['MkD'] ? 1 : 0) . '",
+			   `MvD` = "' . ($_POST['MvD'] ? 1 : 0) . '",
+			   `RmD` = "' . ($_POST['RmD'] ? 1 : 0) . '",
+			   `ChmdD` = "' . ($_POST['ChmdD'] ? 1 : 0) . '",
+			   `View` = "' . ($_POST['View'] ? 1 : 0) . '",
+			   `MngUsrs` = "' . ($_POST['MngUsrs'] ? 1 : 0) . '",
+			   `MngLvls` = "' . ($_POST['MngLvls'] ? 1 : 0) . '",
+			   `MngBckps` = "' . ($_POST['MngBckps'] ? 1 : 0) . '"')) {
         echo 'The access level has been successfully added.<br /><br /><a href="manage_levels.php">Return.</a>';
       }
       else {
