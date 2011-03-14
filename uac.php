@@ -71,7 +71,7 @@ if ($username) {
       // Get the user information.
       $user = sqlArr('SELECT * FROM `' . $mysqlPrefix . 'users` WHERE `username` = "' . mysqlEscape($username) . '"');
       // If the password is valid.
-      if (md5(md5($password) . $user['salt']) == $user['password']) {
+      if (md5(md5(trim($password)) . $user['salt']) == $user['password']) {
         $valid = 1;
         $accessLevel = $user['accessLevel'];
         $accessDirectory = $user['accessDirectory'];
