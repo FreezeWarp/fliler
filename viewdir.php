@@ -56,7 +56,7 @@ foreach ($dirPathPieces as $piece) {
 $dirPath2 = 'You are currently in: <u><a href="viewdir.php?d=' . $cleanUrl . '">Home &#8594;</a> ' . @implode($dirPathPieces2) . '</u>';
 
 if ($perm['View']) {
-  $data = listFiles($uploadDirectory . $dirPath,$n,$e,$lockedFiles,false,false,'seperate',array('lastMod' => true,'owner' => true,'size' => true,'ext' => true,'mime' => true,'content' => 100));
+  $data = listFiles($uploadDirectory . $dirPath,$n,$e,$lockedFiles,false,false,'seperate',array('lastMod' => true,'owner' => true,'size' => true,'ext' => true,'content' => 100));
 
   if ($data['files']) {
     foreach ($data['files'] AS $file) {

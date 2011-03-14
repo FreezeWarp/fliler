@@ -840,10 +840,9 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     echo 'Fliler Backup Mode';
   }
   elseif (strstr($dir,'zip:')) {
-    $filePath = preg_replace('/(.*)zip:(.*)(\.zip)\/(.*)/','$1$2$3',$dir);
-    $dirPath = preg_replace('/(.*)zip:(.*)(\.zip)\/(.*)/','$4',$dir);
+    $filePath = preg_replace('/(.*)zip:(.*)(\.zip|\.cbz)\/(.*)/','$1$2$3',$dir);
+    $dirPath = preg_replace('/(.*)zip:(.*)(\.zip|\.cbz)\/(.*)/','$4',$dir);
     $fileData = fileData(null, $filePath);
-
     $dest = $uploadDirectory . $tmpPathLocal . $fileData['file'] . '/';
     if (is_dir($dest) && !$zipRecreateDir) {
 
@@ -851,7 +850,6 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
     else {
       unzip(null,$fileData['full'],$dest);
     }
-
     return listFiles($dest . $dirPath,$nameFilter,$extFilter,$hiddenFiles,$type,$recursive,$mode,$data);
   }
   else {
