@@ -62,7 +62,7 @@ if ($perm['MngUsrs']) {
           else {
             trigger_error('The query was unsuccessful; ' . mysql_error(),E_USER_ERROR);
           }
-        case 'changepassword': //echo md5(md5('test') . 'MBn63');
+        case 'changepassword':
           if (mysqlQuery('UPDATE `' . $mysqlPrefix . 'users` SET `password` = md5(concat(md5("' . trim($newValue) . '"),salt)) WHERE `username` = "' . $user . '"')) {
             echo $user . ' was updated successfully.<br /><br /><a href="manage_users.php">Click here</a> to return to managing users.';
           }

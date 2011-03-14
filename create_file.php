@@ -75,7 +75,12 @@ if ($perm['MkF']) {
         $file .= '.txt';
       }
     }
-    $file2 = $accessDirectory . $dir . '/' . $file;
+
+    $fm = new fileManager;
+    $fm->setFile($dir,$file);
+    $fm->createFile($contents);
+
+/*    $file2 = $accessDirectory . $dir . '/' . $file;
     $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? $ow = 1 : $ow = 0);
     if (createFile($uploadDirectory . $dir,$file,$contents,$ow)) {
       echo container('The file has been successfully created. What would you like to do now?','<ol>
@@ -103,7 +108,7 @@ if ($perm['MkF']) {
     }
     else {
       echo container('File Contents','<blockquote>' . nl2br(htmlentities($contents)) . '</blockquote>');
-    }
+    }*/
     break;
   }
 }

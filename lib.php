@@ -69,10 +69,50 @@ class fileManager {
     $this->activeFile = $fullPath;
   }
 
+  public function lockedFile() {
+    global $lockedFiles;
+    if (in_array($this->activeFile,$lockedFiles)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
   public function createFile($content = null,$overwrite = false) {
     $dir = $this->activeDir;
     if (!is_dir($this->activeDir)) {
       $this->createDir($overwrite,0777);
+    }
+
+    if ($this->lockedFile()) {
+      trigger_error($this->activeFile . ' is protected.',E_USER_ERROR);
+      return false;
+    }
+    else {
+      if (file_exists($this->activeFile)) {
+        if (!$overwrite) {
+          trigger_error($file . ' already exists and is not to be overwritten.',E_USER_ERROR);
+          return false;
+        }
+        elseif (!is_writable($file)) {
+          trigger_error($file . ' already exists and is not writable.',E_USER_ERROR);
+          return false;
+        }
+        elseif (!deleteFile(null,$file)) {
+          trigger_error($file . ' already exists and cannot be removed.',E_USER_ERROR);
+          return false;
+        }
+      }
+
+/*      if ($content) {
+        if (file_put_contents($file, $content)) { return true; }
+        else { trigger_error($file . ' cannot be written for unknown reasons.',E_USER_ERROR); return false; }
+      }
+      else {
+        if(touch($file)) { return true; }
+        else { trigger_error($file . ' cannot be written for unknown reasons.',E_USER_ERROR); return false; }
+      }*/
     }
   }
 
@@ -93,6 +133,31 @@ class fileManager {
 
     if(mkdir($dir,$perm)) { return true; }
     else { trigger_error($dir . ' can not be created for unknown reasons.',E_USER_ERROR); return false; }
+  }
+
+  function deleteFile($dir,$file) {
+    $dir = $this->activeDir;
+    if (!is_dir($this->activeDir)) {
+      $this->createDir($overwrite,0777);
+    }
+
+    if ($this->lockedFile()) {
+      trigger_error($this->activeFile . ' is protected.',E_USER_ERROR);
+    }
+    else {
+      if (!file_exists($this->activeFile)) {
+        trigger_error($this->activeFile . ' does not exist.',E_USER_ERROR);
+      }
+      elseif (!is_writable($this->activeFile)) {
+        trigger_error($this->activeFile . ' is not readable.',E_USER_ERROR);
+      }
+      elseif(unlink($this->activeFile)) {
+        return true;
+      }
+      else {
+        trigger_error($this->activeFile . ' could not be deleted for unknown reasons.',E_USER_ERROR);
+      }
+    }
   }
 }
 
