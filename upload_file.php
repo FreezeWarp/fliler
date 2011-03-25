@@ -26,7 +26,7 @@ if ($perm['MkF']) {
     $maxuploads = ini_get('max_file_uploads');
     $maxsize = ini_get('upload_max_filesize');
     $friendlySize = friendlySize(parseConfigNum($maxsize),0);
-//    if (($browser['browser'] == 'firefox') && ((($browser['majorVersion'] == 3) && ($browser['minorVersion'] >= 6)) || ($browser['majorVersion'] >= 4))) { $firefoxUpload = true; }
+
     echo container('Upload a File:','<script src="upload_file.js"></script><form action="upload_file.php?stage=2" method="post" enctype="multipart/form-data">
   <div class="left">
     <label for="file[]">Choose a File:</label><br />
@@ -57,15 +57,19 @@ if ($perm['MkF']) {
       $uploadFile = new fileManager;
       $uploadFile->setUploadedFile($tmpfile = $_FILES['file']['tmp_name'][$i]);
       $uploadFile->setGoal($dir,$file,true);
+
       if ($uploadFile->moveFile($ow,true)) {
         $goodFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $dir . '/' . $file) . '">' . $file . '</a>';
       }
-      else { echo 2;
+      else {
         $badFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $dir . '/' . $file) . '">' . $file . '</a>';
       }
     }
     for($i = 0; $i <= count($_POST['urls']); $i ++) {
-      if (!$_POST['urls'][$i]) { continue; }
+      if (!$_POST['urls'][$i]) {
+        continue;
+      }
+
       $file = $_POST['urls'][$i];
       if (copyFile($file,$dir . '/' . filePart($file),$ow,true)) {
         $goodFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $dir . '/' . filePart($file)) . '">' . filePart($file) . '</a>';
@@ -74,6 +78,7 @@ if ($perm['MkF']) {
         $badFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $dir . '/' . filePart($file)) . '">' . filePart($file) . '</a>';
       }
     }
+
     echo container('The file upload has finished. What would you like to do now.','<ol>' . ((count($goodFiles) > 0) ? '
   <li>The following files were uploaded successfully: ' . implode(', ',$goodFiles) . '</li>' : '<li>No files were uploaded successfully.</li>') . ((count($badFiles) > 0) ? '
   <li>The following files could not be uploaded: ' . implode(', ',$badFiles) . '</li>' : '<li>No files could not be uploaded.</li>') . '
@@ -81,21 +86,6 @@ if ($perm['MkF']) {
   <li><a href="index.php">Go to the Index</a></li>
   <li><a href="javascript:window.close();">Close This Window</a></li>
 </ol>',0);
-/*    if (uploadFile($dir,$file,$ow)) {
-      echo container('The file has been successfully uploaded. What would you like to do now?','<ol>
-  <li><a href="create_file.php">Upload Another File</a></li>
-  <li><a href="viewfile.php?f=' . $file2 . '">View the File</a></li>
-  <li><a href="index.php">Go to the Index</a></li>
-  <li><a href="javascript:window.close();">Close This Window</a></li>
-</ol>',0);
-    }
-    else {
-      echo container('The file upload failed. What would you like to do now?','<ol id="main">
-  <li><a href="create_file.php">Upload a File Elsewhere</a></li>
-  <li><a href="index.php">Go to the Index</a></li>
-  <li><a href="javascript:window.close();">Close This Window</a></li>
-</ol>',1);
-    } */
     break;
   }
 }
