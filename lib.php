@@ -279,65 +279,13 @@ class fileManager {
         }
       }
       else {
-        if (!rename($this->activeFile,$this->goalFile)) {var_dump($this);
+        if (!rename($this->activeFile,$this->goalFile)) {
           trigger_error($oldFile . ' could not be moved for unknown reasons.',E_USER_ERROR);
           return false;
         }
         else {
           return true;
         }
-      }
-    }
-  }
-
-  function renameFile($overwrite = false) {
-    if (!is_dir($this->activeDir)) {
-      $this->createDir(false,0777);
-    }
-
-    if ($this->lockedFile()) {
-      trigger_error($this->activeFile . ' is protected.',E_USER_ERROR);
-      return false;
-    }
-    elseif (!$this->fileExists()) {
-      trigger_error($this->activeFile . ' does not exist.',E_USER_ERROR);
-      return false;
-    }
-    elseif (!$this->isWritable && !$this->isUploadedFile) {
-      trigger_error($this->activeFile . ' can not be written.',E_USER_ERROR);
-    }
-    else {
-      if ($this->goalExists) {
-        if (!$overwrite) {
-          trigger_error($this->goalFile . ' already exists and is not to be overwritten.',E_USER_ERROR);
-          return false;
-        }
-        else {
-          if (!$this->goalIsWritable) {
-            trigger_error($this->goalFile . ' already exists and can not be overwritten because it is not writable.',E_USER_ERROR);
-            return false;
-          }
-          else {
-            $deleteFile = new fileManager;
-            $deleteFile->setFile(false,$this->goalFile);
-            if (!$deleteFile->deleteFile()) {
-              trigger_error($newPath . ' already exists and can not be overwritten for unknown reasons.',E_USER_ERROR);
-              return false;
-            }
-          }
-        }
-      }
-
-      if (!is_writable($this->goalDir)) {
-        trigger_error($this->goalDir . ' is not writable.',E_USER_ERROR);
-        return false;
-      }
-
-      if (!rename($this->activeFile,$this->goalFile)) {
-        return false;
-      }
-      else {
-        return true;
       }
     }
   }
