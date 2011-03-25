@@ -201,7 +201,7 @@ The configuration options in php.ini can sometimes cause problems for Fliler. In
 </div><br />
 
 <h2 id="browser">Improving Your Browsing Experience</h2>
-Although any browser, including text-based browser (like Lynx) should work with the majority of Flilr, it is generally recommended that you use <a href="http://www.mozilla.com/en-US/firefox/firefox.html">Mozilla Firefox 3.5</a>, <a href="http://www.google.com/chrome">Google Chrome 3</a>, or <a href="http://www.apple.com/safari/download/">Apple Safari 4</a> for this software. Additionally, if you use Opera, please make sure you are using version 10 or newer, and if you are using Internet Explorer, please make sure you are using version 8 or newer.<br /><br />
+Although any browser, including text-based browser (like Lynx) should work with the majority of Fliler, it is generally recommended that you use <a href="http://www.mozilla.com/en-US/firefox/firefox.html">Mozilla Firefox 4</a>, <a href="http://www.google.com/chrome">Google Chrome Latest</a>, or <a href="http://www.apple.com/safari/download/">Apple Safari 5</a> for this software. Additionally, if you use Opera, please make sure you are using version 11 or newer, and if you are using Internet Explorer, please make sure you are using version 9 or newer.<br /><br />
 
 <div style="padding-left: 50px;">
   <h3 id="support">Browser Support Notes</h3>
