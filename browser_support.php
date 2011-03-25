@@ -59,16 +59,16 @@ echo documentStart('Browser Support');
 
     <tr>
       <td>Internet Explorer</td>
-      <td>&le;7</td>
-      <td>8</td>
+      <td>&le;8</td>
       <td>9</td>
+      <td>&nbsp;</td>
     </tr>
 
     <tr>
       <td>Mozilla Firefox</td>
-      <td>&le;3.5</td>
-      <td>3.6</td>
+      <td>&le;3.6</td>
       <td>4.0</td>
+      <td>&nbsp;</td>
     </tr>
 
     <tr>
@@ -89,9 +89,6 @@ $browser->getArcBit();
 switch ($browser->browser) {
   case 'msie':
   if ($browser->majorVersion >= 9) {
-    echo 'You are using a version of Internet Explorer that should work reasonably well.';
-  }
-  elseif ($browser->majorVersion == 8) {
     echo 'You are using an up-to-date version of Internet Explorer. However, we recommend switching to Mozilla Firefox, Apple Safari, or Google Chrome. Internet Explorer, while packaged with Microsoft Windows, is not tested heavily, and may not support many functions, such as Javascript, and the general CSS layout used.';
   }
   else {
@@ -101,12 +98,9 @@ switch ($browser->browser) {
 
   case 'firefox':
   if ($browser->majorVersion >= 4) {
-    echo 'You are using an expirimental version of Mozilla Firefox. Mozilla Firefox is well supported by Filer, and should work well.';
+    echo 'You are using an up-to-date version of Mozilla Firefox 4. Mozilla Firefox is well supported by Filer, and should work well.';
   }
   elseif ($browser->majorVersion == 3 && $browser->minorVersion >= 6) {
-    echo 'You are using an up-to-date version of Mozilla Firefox 3. Mozilla Firefox is well supported by Filer, and should work well.';
-  }
-  elseif ($browser->majorVersion == 3) {
     echo 'You are using an old version of Mozilla Firefox 3. Mozilla Firefox is well supported by Filer, but newer versions will allow additional features, such as CSS3 and HTML5, to be utilized. Older versions are also now tested. <b><a href="http://www.mozilla.com/en-US/firefox/firefox.html">We recommend upgrading</a></b>.';
   }
   else {
