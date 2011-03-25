@@ -134,9 +134,22 @@ class fileManager {
         }
       }
 
-      if ($content) {
+      if (!$cfh = fopen($this->activeFile, 'w')) {
+        trigger_error($this->activeFile . ' could not be opened for writing.',E_USER_ERROR);
+        return false;
+      }
+      elseif (fwrite($cfh, $content) === false) {
+        trigger_error($this->activeFile . ' could not be written to.',E_USER_ERROR);
+        return false;
+      }
+      else {
+        return true;
+      }
+
+      /*if ($content) {
+
         if (!file_put_contents($this->activeFile, $content)) {
-          trigger_error($this->activeFile . ' cannot be written for unknown reasons.',E_USER_ERROR);
+          trigger_error($this->activeFile . ' cannot be written for unknown reasons.',E_USER_ERROR);Z
           return false;
         }
         else {
@@ -148,10 +161,10 @@ class fileManager {
           trigger_error($this->activeFile . ' cannot be written for unknown reasons.',E_USER_ERROR);
           return false;
         }
-        else {
+        else { echo $this->activeFile;
           return true;
         }
-      }
+      }*/
     }
   }
 
