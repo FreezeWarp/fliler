@@ -45,27 +45,33 @@ if ($perm['MkF']) {
     break;
 
     case 2:
-    $dir = $uploadDirectory . $_POST['dir'];
+    $dir = $_POST['dir'];
     $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? $ow = 1 : $ow = 0);
     for($i = 0; $i <= count($_FILES['file']['name']); $i ++) {
-      if ($_FILES['file']['error'][$i] || !$_FILES['file']['name'][$i]) { continue; }
-      $file = $_FILES['file']['name'][$i];
-      $tmpfile = $_FILES['file']['tmp_name'][$i];
-      if (moveFile(null,$dir,$tmpfile,$file,$ow,true)) {
-        $goodFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $_POST['dir'] . '/' . $file) . '">' . $file . '</a>';
+      if ($_FILES['file']['error'][$i] || !$_FILES['file']['name'][$i]) {
+        continue;
       }
-      else {
-        $badFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $_POST['dir'] . '/' . $file) . '">' . $file . '</a>';
+
+      $file = $_FILES['file']['name'][$i];
+
+      $uploadFile = new fileManager;
+      $uploadFile->setUploadedFile($tmpfile = $_FILES['file']['tmp_name'][$i]);
+      $uploadFile->setGoal($dir,$file,true);
+      if ($uploadFile->moveFile($ow,true)) {
+        $goodFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $dir . '/' . $file) . '">' . $file . '</a>';
+      }
+      else { echo 2;
+        $badFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $dir . '/' . $file) . '">' . $file . '</a>';
       }
     }
     for($i = 0; $i <= count($_POST['urls']); $i ++) {
       if (!$_POST['urls'][$i]) { continue; }
       $file = $_POST['urls'][$i];
       if (copyFile($file,$dir . '/' . filePart($file),$ow,true)) {
-        $goodFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $_POST['dir'] . '/' . filePart($file)) . '">' . filePart($file) . '</a>';
+        $goodFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $dir . '/' . filePart($file)) . '">' . filePart($file) . '</a>';
       }
       else {
-        $badFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $_POST['dir'] . '/' . filePart($file)) . '">' . filePart($file) . '</a>';
+        $badFiles[] = '<a href="viewfile.php?f=' . urlencode($accessDirectory . $dir . '/' . filePart($file)) . '">' . filePart($file) . '</a>';
       }
     }
     echo container('The file upload has finished. What would you like to do now.','<ol>' . ((count($goodFiles) > 0) ? '

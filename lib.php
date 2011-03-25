@@ -100,6 +100,59 @@ class fileManager {
     }
   }
 
+  public function setGoal($dir,$file,$uac = false) {
+    if ($dir === false) {
+      $dir = $this->dirPart($file);
+      $file = $this->filePart($file);
+    }
+
+    if ($uac) {
+      $dir = $this->baseDir . $dir;
+    }
+
+    if ($dir) {
+      while (strstr($dir,'//') !== false) { $dir = str_replace('//','/',$dir); }
+      if (substr($dir,0,1) != '/') { $dir = '/' . $dir; }
+      if (substr($dir,-1,1) != '/') { $dir = $dir . '/'; }
+    }
+
+    if ($file) {
+      $this->goalDir = $dir;
+      $this->goalFile = $dir . $file;
+
+      if (is_readable($this->goalFile)) {
+        $this->goalIsReadable = true;
+      }
+      else {
+        $this->goalIsReadable = false;
+      }
+
+      if (is_writable($this->goalFile)) {
+        $this->goalIsWritable = true;
+      }
+      else {
+        $this->goalIsWritable = false;
+      }
+
+      if (is_file($this->goalFile)) {
+        $this->goalExists = true;
+      }
+      else {
+        $this->goalExists = false;
+      }
+    }
+
+    else {
+      $this->goalDir = $dir;
+    }
+  }
+
+  public function setUploadedFile($path) {
+    $this->setDir($this->dirPart($path),$uac);
+    $this->activeFile = $path;
+    $this->isUploadedFile = true;
+  }
+
   public function fileExists() {
     if (is_file($this->activeFile)) {
       return true;
@@ -214,8 +267,8 @@ class fileManager {
     }
   }
 
-  public function moveFile($newPath,$overwrite = 0,$upload = false,$url = false) {
-    if (!is_dir($this->activeDir)) {
+  public function moveFile($overwrite = 0,$upload = false,$url = false) {
+    if (!is_dir($this->activeDir)) { echo 5;
       $this->createDir(false,0777);
     }
 
@@ -227,22 +280,24 @@ class fileManager {
       trigger_error($this->activeFile . ' does not exist.',E_USER_ERROR);
       return false;
     }
-    elseif (!$this->isWritable) {
+    elseif (!$this->isWritable && !$this->isUploadedFile) {
       trigger_error($this->activeFile . ' can not be written.',E_USER_ERROR);
     }
     else {
-      if (is_file($newPath)) {
+      if ($this->goalExists) {
         if (!$overwrite) {
-          trigger_error($newPath . ' already exists and is not to be overwritten.',E_USER_ERROR);
+          trigger_error($this->goalFile . ' already exists and is not to be overwritten.',E_USER_ERROR);
           return false;
         }
         else {
-          if (!is_writable($newPath)) {
-            trigger_error($newPath . ' already exists and can not be overwritten because it is not writable.',E_USER_ERROR);
+          if (!$this->goalIsWritable) {
+            trigger_error($this->goalFile . ' already exists and can not be overwritten because it is not writable.',E_USER_ERROR);
             return false;
           }
           else {
-            if (!deleteFile(null,$newPath)) {
+            $deleteFile = new fileManager;
+            $deleteFile->setFile(false,$this->goalFile);
+            if (!$deleteFile->deleteFile()) {
               trigger_error($newPath . ' already exists and can not be overwritten for unknown reasons.',E_USER_ERROR);
               return false;
             }
@@ -250,19 +305,28 @@ class fileManager {
         }
       }
 
-      if (!is_writable($this->parentDirectory($newPath))) { 
-        trigger_error($newDir . ' is not writable.',E_USER_ERROR);
+      if (!is_writable($this->goalDir)) { var_dump($this);
+        trigger_error($this->goalDir . ' is not writable.',E_USER_ERROR);
         return false;
       }
 
-      if ($upload) {
-        if (!is_uploaded_file($oldFile)) { trigger_error($oldFile . ' is not an uploaded file, but will be moved as one.',E_USER_WARNING); }
-        if (move_uploaded_file($oldFile,$newFile)) { return true; }
-        else { trigger_error($oldFile . ' could not be uplaoded for unknown reasons.',E_USER_ERROR); return false; }
+      if ($this->isUploadedFile) {
+        if (!move_uploaded_file($this->activeFile,$this->goalFile)) {
+          trigger_error($oldFile . ' could not be uploaded for unknown reasons.',E_USER_ERROR);
+          return false;
+        }
+        else {
+          return true;
+        }
       }
       else {
-        if (rename($oldFile,$newFile)) { return true; }
-        else { trigger_error($oldFile . ' could not be moved for unknown reasons.',E_USER_ERROR); return false; }
+        if (!rename($this->activeFile,$this->goalFile)) {
+          trigger_error($oldFile . ' could not be moved for unknown reasons.',E_USER_ERROR);
+          return false;
+        }
+        else {
+          return true;
+        }
       }
     }
   }
