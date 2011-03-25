@@ -227,7 +227,7 @@ class fileManager {
   }
 
   /* Security Note on Using Rename() instead: If a file already exists, it must be overwritten, a permission only granted if a file can be deleted, which usually is higher than moving/renaming files. This largely makes move_uploaded_file() useless. */
-  public function uploadFile($dir,$file,$overwrite = 0) {
+  public function uploadFile($overwrite = false) {
     if (!is_dir($this->activeDir)) {
       $this->createDir(false,0777);
     }
@@ -267,8 +267,8 @@ class fileManager {
     }
   }
 
-  public function moveFile($overwrite = 0,$upload = false,$url = false) {
-    if (!is_dir($this->activeDir)) { echo 5;
+  public function moveFile($overwrite = false,$upload = false,$url = false) {
+    if (!is_dir($this->activeDir)) {
       $this->createDir(false,0777);
     }
 
@@ -305,7 +305,7 @@ class fileManager {
         }
       }
 
-      if (!is_writable($this->goalDir)) { var_dump($this);
+      if (!is_writable($this->goalDir)) {
         trigger_error($this->goalDir . ' is not writable.',E_USER_ERROR);
         return false;
       }
