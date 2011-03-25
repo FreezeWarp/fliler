@@ -78,11 +78,9 @@ if ($perm['MkF']) {
     }
 
     $fm = new fileManager;
-    $fm->setFile($dir,$file);
-    $fm->createFile($contents,$ow);
+    $fm->setFile($dir,$file,true);
 
-/*    $file2 = $accessDirectory . $dir . '/' . $file;
-    if (createFile($uploadDirectory . $dir,$file,$contents,$ow)) {
+    if ($fm->createFile($contents,$ow)) {
       echo container('The file has been successfully created. What would you like to do now?','<ol>
   <li><a href="create_file.php">Create Another File</a></li>
   <li><a href="viewfile.php?f=' . $file2 . '">View the File</a></li>
@@ -108,7 +106,7 @@ if ($perm['MkF']) {
     }
     else {
       echo container('File Contents','<blockquote>' . nl2br(htmlentities($contents)) . '</blockquote>');
-    }*/
+    }
     break;
   }
 }

@@ -31,16 +31,6 @@ class fileManager {
     if (!$value) return false;
   }
 
-  public function setDir($dir) {
-    $dir = $this->baseDir . $dir;
-
-    while (strstr($dir,'//') !== false) { $dir = str_replace('//','/',$dir); }
-    if (substr($dir,0,1) != '/') { $dir = '/' . $dir; }
-    if (substr($dir,-1,1) != '/') { $dir = $dir . '/'; }
-
-    $this->activeDir = $dir;
-  }
-
   public function parentDirectory($dir) {
     $dirPieces = explode('/',$dir);
     foreach ($dirPieces as $key => $piece) {
@@ -68,13 +58,37 @@ class fileManager {
     return $finalPiece;
   }
 
-  public function setFile($dir,$file) {
-    if (!$dir) {
-      $this->setDir($this->parentDirectory($file));
+  public function dirPart($path) {
+    $dirPieces = explode('/',$path);
+    foreach ($dirPieces as &$piece) {
+      if (($piece === '') || ($piece === null)) {
+        unset($piece);
+      }
+    }
+    array_pop($dirPieces); // Removes last piece.
+
+    return implode('/',$dirPieces) . '/';
+  }
+
+  public function setDir($dir,$uac = false) {
+    if ($uac) {
+      $dir = $this->baseDir . $dir;
+    }
+
+    while (strstr($dir,'//') !== false) { $dir = str_replace('//','/',$dir); }
+    if (substr($dir,0,1) != '/') { $dir = '/' . $dir; }
+    if (substr($dir,-1,1) != '/') { $dir = $dir . '/'; }
+
+    $this->activeDir = $dir;
+  }
+
+  public function setFile($dir,$file,$uac = false) {
+    if ($dir === false) { // Keep in mind empty directories should be processed below.
+      $this->setDir($this->dirPart($file),$uac);
       $this->activeFile = $file;
     }
     else {
-      $this->setDir($dir);
+      $this->setDir($dir,$uac);
       $this->activeFile = $this->activeDir . $file;
     }
   }
@@ -100,7 +114,7 @@ class fileManager {
       return false;
     }
     else {
-      if (file_exists($this->activeFile)) {
+      if (is_file($this->activeFile)) {
         if (!$overwrite) {
           trigger_error($this->activeFile . ' already exists and is not to be overwritten.',E_USER_ERROR);
           return false;
@@ -111,7 +125,7 @@ class fileManager {
         }
         else {
           $deleteFile = new fileManager;
-          $deleteFile->setFile($this->activeDir,$this->activeFile);
+          $deleteFile->setFile(false, $this->activeFile);
 
           if (!$deleteFile->deleteFile()) {
             trigger_error($this->activeFile . ' already exists and cannot be removed.',E_USER_ERROR);
