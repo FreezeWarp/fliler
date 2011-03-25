@@ -226,47 +226,6 @@ class fileManager {
     }
   }
 
-  /* Security Note on Using Rename() instead: If a file already exists, it must be overwritten, a permission only granted if a file can be deleted, which usually is higher than moving/renaming files. This largely makes move_uploaded_file() useless. */
-  public function uploadFile($overwrite = false) {
-    if (!is_dir($this->activeDir)) {
-      $this->createDir(false,0777);
-    }
-
-    if ($this->lockedFile()) {
-      trigger_error($this->activeFile . ' is protected.',E_USER_ERROR);
-      return false;
-    }
-    else {
-      if (is_file($this->activeFile)) {
-        if (!$overwrite) {
-          trigger_error($this->activeFile . ' already exists and is not to be overwritten.',E_USER_ERROR);
-          return false;
-        }
-        elseif (!is_writable($this->activeFile)) {
-          trigger_error($this->activeFile . ' already exists and is not writable.',E_USER_ERROR);
-          return false;
-        }
-        else {
-          $deleteFile = new fileManager;
-          $deleteFile->setFile(false, $this->activeFile);
-
-          if (!$deleteFile->deleteFile()) {
-            trigger_error($this->activeFile . ' already exists and cannot be removed.',E_USER_ERROR);
-            return false;
-          }
-        }
-      }
-
-      if (!rename($_FILES["file"]["tmp_name"],$file)) {
-        trigger_error($file . ' cannot be uploaded for unknown reasons.',E_USER_ERROR);
-        return false;
-      }
-      else {
-        return true;
-      }
-    }
-  }
-
   public function moveFile($overwrite = false,$upload = false,$url = false) {
     if (!is_dir($this->activeDir)) {
       $this->createDir(false,0777);
