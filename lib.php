@@ -102,13 +102,14 @@ class fileManager {
           return false;
         }
         else {
-          $moveFile = new fileManager;
-          $moveFile->setFile($this->activeDir,$this->activeFile);
+          $deleteFile = new fileManager;
+          $deleteFile->setFile($this->activeDir,$this->activeFile);
 
           if (!$deleteFile->deleteFile()) {
             trigger_error($this->activeFile . ' already exists and cannot be removed.',E_USER_ERROR);
             return false;
           }
+          else { echo 2; }
         }
       }
 
@@ -140,7 +141,7 @@ class fileManager {
       }
     }
 
-    if(mkdir($dir,$perm)) { return true; }
+    if (mkdir($dir,$perm)) { return true; }
     else { trigger_error($dir . ' can not be created for unknown reasons.',E_USER_ERROR); return false; }
   }
 
@@ -151,19 +152,23 @@ class fileManager {
 
     if ($this->lockedFile()) {
       trigger_error($this->activeFile . ' is protected.',E_USER_ERROR);
+      return false;
     }
     else {
       if (!file_exists($this->activeFile)) {
         trigger_error($this->activeFile . ' does not exist.',E_USER_ERROR);
+        return false;
       }
       elseif (!is_writable($this->activeFile)) {
         trigger_error($this->activeFile . ' is not readable.',E_USER_ERROR);
+        return false;
       }
-      elseif(unlink($this->activeFile)) {
-        return true;
+      elseif(!unlink($this->activeFile)) {
+        trigger_error($this->activeFile . ' could not be deleted for unknown reasons.',E_USER_ERROR);
+        return false;
       }
       else {
-        trigger_error($this->activeFile . ' could not be deleted for unknown reasons.',E_USER_ERROR);
+        return true;
       }
     }
   }
