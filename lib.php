@@ -41,7 +41,7 @@ class fileManager {
     $this->activeDir = $dir;
   }
 
-  function parentDirectory($dir) {
+  public function parentDirectory($dir) {
     $dirPieces = explode('/',$dir);
     foreach ($dirPieces as $key => $piece) {
       if ($piece == '') {
@@ -55,7 +55,7 @@ class fileManager {
     return $parentDirectory . '/';
   }
 
-  function filePart($path) {
+  public function filePart($path) {
     $dirPieces = explode('/',$path);
     foreach ($dirPieces as &$piece) {
       if (($piece === '') || ($piece === null)) {
@@ -70,7 +70,7 @@ class fileManager {
 
   public function setFile($dir,$file) {
     if (!$dir) {
-      $this->setDir($this->parentDir($file));
+      $this->setDir($this->parentDirectory($file));
       $this->activeFile = $file;
     }
     else {
@@ -91,7 +91,6 @@ class fileManager {
   }
 
   public function createFile($content = null,$overwrite = false) {
-    $dir = $this->activeDir;
     if (!is_dir($this->activeDir)) {
       $this->createDir($overwrite,0777);
     }
@@ -121,14 +120,24 @@ class fileManager {
         }
       }
 
-/*      if ($content) {
-        if (file_put_contents($file, $content)) { return true; }
-        else { trigger_error($file . ' cannot be written for unknown reasons.',E_USER_ERROR); return false; }
+      if ($content) {
+        if (!file_put_contents($this->activeFile, $content)) {
+          trigger_error($this->activeFile . ' cannot be written for unknown reasons.',E_USER_ERROR);
+          return false;
+        }
+        else {
+          return true;
+        }
       }
       else {
-        if(touch($file)) { return true; }
-        else { trigger_error($file . ' cannot be written for unknown reasons.',E_USER_ERROR); return false; }
-      }*/
+        if(!touch($this->activeFile)) {
+          trigger_error($this->activeFile . ' cannot be written for unknown reasons.',E_USER_ERROR);
+          return false;
+        }
+        else {
+          return true;
+        }
+      }
     }
   }
 
@@ -154,16 +163,16 @@ class fileManager {
       }
     }
 
-    if (mkdir($this->activeDir,$perm)) {
-      return true;
-    }
-    else {
+    if (!mkdir($this->activeDir,$perm)) {
       trigger_error($this->activeDir . ' can not be created for unknown reasons.',E_USER_ERROR);
       return false;
     }
+    else {
+      return true;
+    }
   }
 
-  function deleteFile() {
+  public function deleteFile() {
     if (!is_dir($this->activeDir)) {
       $this->createDir($overwrite,0777);
     }
