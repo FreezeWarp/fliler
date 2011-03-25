@@ -46,8 +46,8 @@ if ($perm['MvF']) {
     $oldDir = $uploadDirectory . $_POST['oldDir'];
     $newDir = $uploadDirectory . $_POST['newDir'];
     $file2 = $accessDirectory . $_POST['newDir'] . '/' . $_POST['file'];
-    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? $ow = 1 : $ow = 0);
-    if (($_POST['ow'] == 'on') && ($perm['RmF'])) { $ow = 1; } else { $ow = 0; }
+    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? true : false);
+
     if (moveFile($oldDir,$newDir,$file,$file,$ow)) {
       echo container('The file has been successfully moved. What would you like to do now?','<ol>
   <li><a href="move_file.php">Move Another File</a></li>

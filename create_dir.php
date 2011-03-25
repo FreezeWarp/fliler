@@ -49,12 +49,8 @@ if ($perm['MkD']) {
     case 2:
     $dir = $uploadDirectory . $_POST['dir'];
     $dir2 = $accessDirectory . $_POST['dir'];
-    if ($_POST['ow'] == 'on') {
-      $ow = 1;
-    }
-    else {
-      $ow = 0;
-    }
+    $ow = ((($_POST['ow'] == 'on') && ($perm['RmD'])) ? true : false);
+
     $perm = intval(octdec($_POST['perm']));
     if (createDir($dir,$ow,$perm)) {
       echo container('The directory was successfully created. What would you like to do now?','<ol>

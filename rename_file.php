@@ -46,14 +46,7 @@ if ($perm['MvF']) {
     $dir = (($_GET['dir']) ? $_GET['dir'] : $_POST['dir']);
     $oldFile = (($_GET['file']) ? $_GET['file'] : $_POST['file']);
     $newFile = (($_GET['newFile']) ? $_GET['newFile'] : $_POST['newFile']);
-    $file2 = $_POST['dir'] . '/' . $_POST['newFile'];
-    $ow = $_POST['ow'];
-    if (($_POST['ow'] == 'on') && ($perm['RmF'])) {
-      $ow = 1;
-    }
-    else {
-      $ow = 0;
-    }
+    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? true : false);
 
     $uploadFile = new fileManager;
     $uploadFile->setFile($dir,$oldFile,true);
@@ -62,7 +55,7 @@ if ($perm['MvF']) {
     if ($uploadFile->moveFile($ow)) {
       echo container('The file has been successfully renamed. What would you like to do now?','<ol>
   <li><a href="rename_file.php">Rename Another File</a></li>
-  <li><a href="viewfile.php?f=' . urlencode($file2) . '">View the File</a></li>
+  <li><a href="viewfile.php?f=' . urlencode($_POST['dir'] . '/' . $_POST['newFile']) . '">View the File</a></li>
   <li><a href="index.php">Go to the Index</a></li>
   <li><a href="javascript:window.close();">Close This Window</a></li>
 </ol>',0);

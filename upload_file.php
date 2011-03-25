@@ -46,7 +46,8 @@ if ($perm['MkF']) {
 
     case 2:
     $dir = $_POST['dir'];
-    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? $ow = 1 : $ow = 0);
+    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? true : false);
+
     for($i = 0; $i <= count($_FILES['file']['name']); $i ++) {
       if ($_FILES['file']['error'][$i] || !$_FILES['file']['name'][$i]) {
         continue;

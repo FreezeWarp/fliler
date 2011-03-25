@@ -54,8 +54,9 @@ if ($perm['MkF']) {
     case 2:
     $dir = $_POST['dir'];
     $file = $_POST['file'];
-    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? $ow = 1 : $ow = 0);
+    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? true : false);
     $contents = $_POST['contents'];
+
     if ($_POST['force_ext']) {
       if (strstr($file,'.')) {
         // Do nothing
