@@ -64,6 +64,9 @@ if ($valid == 1) {
     if (is_writable('config.php')) {
       trigger_error('The file "config.php" is writable by the server. It is highly recommended that you chmod the file 400 to prevent Fliler from being used maliciously by a third party.',E_USER_WARNING);
     }
+    if (true) {
+      trigger_error('Running PHP version ' . phpversion(),E_USER_NOTICE);
+    }
   }
   echo container('Developer Memo: Beta 6','<ol>
   <li>Remove E_NOTICE errors (good practice).</li>

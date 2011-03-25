@@ -245,6 +245,7 @@ $errors = array(
   E_NOTICE => '',
   E_STRICT => '',
   E_DEPRECATED => '',
+  E_USER_DEPRECATED => '',
 );
 
 // Require all key functions of the script.
