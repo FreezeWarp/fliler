@@ -12,6 +12,7 @@
  * getBrowser ([$agent = false])
  * return array('browser','version','majorVersion','minorVersion',platform','userAgent') */
 function getBrowser($agent = false) {
+  trigger_error('getBrowser function is deprecated.',E_USER_DEPRECATED);
   static $l, $j, $check, $navigatorVersion, $majorVersion, $minorVersion, $minorVersion2, $minorVersion3, $sdec;
   // The agents we should check. This should be a comma seperated list. Note that order is very important: Mozilla is referrenced in nearly every user agent on earth, while Safari appears in Chrome, etc. Any user agent that might appear in another should be placed last generally.
   // Also note that early versions of Opera appear as IE if msie comes before opera. This may not be a bad thing, since this was intentional on Opera's part, but it does mess up the versioning system.
@@ -112,5 +113,42 @@ function getBrowser($agent = false) {
     'userAgent' => $agent,
   );
   return $userData;
+}
+
+
+
+/* createFile v.2 */
+function createFile($dir,$file,$content = null,$overwrite = 0) {
+  trigger_error('createFile function is deprecated.',E_USER_DEPRECATED);
+  if ($dir) {
+    $dir = formatDir($dir);
+    if (!is_dir($dir)) {
+      if (!createDir($dir,0777)) {
+        trigger_error($dir  . 'does not exist and cannot be created.',E_USER_ERROR);
+      }
+    }
+    $file = $dir . $file;
+  }
+
+  if (lockedFile($file)) {
+    trigger_error($file . ' is protected.',E_USER_ERROR);
+    return false;
+  }
+  else {
+    if (file_exists($file)) {
+      if (!$overwrite) { trigger_error($file . ' already exists and is not to be overwritten.',E_USER_ERROR); return false;}
+      if (!is_writable($file)) { trigger_error($file . ' already exists and is not writable.',E_USER_ERROR); return false; }
+      if(!deleteFile(null,$file)) { trigger_error($file . ' already exists and cannot be removed',E_USER_ERROR); return false; }
+    }
+
+    if ($content) {
+      if (file_put_contents($file, $content)) { return true; }
+      else { trigger_error($file . ' cannot be written for unknown reasons.',E_USER_ERROR); return false; }
+    }
+    else {
+      if(touch($file)) { return true; }
+      else { trigger_error($file . ' cannot be written for unknown reasons.',E_USER_ERROR); return false; }
+    }
+  }
 }
 ?>
