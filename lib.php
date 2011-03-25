@@ -18,8 +18,12 @@ require('mysql.php'); // MySQL Lib
 class fileManager {
   public function __construct() {
     global $uploadDirectory,$accessDirectory;
+
     $baseDir = $uploadDirectory . '/' . $accessDirectory . '/';
-    while (strstr($baseDir,'//') !== false) { $baseDir = str_replace('//','/',$baseDir); }
+    while (strstr($baseDir,'//') !== false) {
+      $baseDir = str_replace('//','/',$baseDir);
+    }
+
     $this->baseDir = $baseDir;
   }
 
@@ -60,14 +64,19 @@ class fileManager {
     }
     $totalPieces = count($dirPieces) - 1;
     $finalPiece = $dirPieces[$totalPieces];
+
     return $finalPiece;
   }
 
   public function setFile($dir,$file) {
-    $dir = $this->setDir($dir);
-    $fullPath = $this->activeDir . $file;
-
-    $this->activeFile = $fullPath;
+    if (!$dir) {
+      $this->setDir($this->parentDir($file));
+      $this->activeFile = $file;
+    }
+    else {
+      $this->setDir($dir);
+      $this->activeFile = $this->activeDir . $file;
+    }
   }
 
   public function lockedFile() {
@@ -109,7 +118,6 @@ class fileManager {
             trigger_error($this->activeFile . ' already exists and cannot be removed.',E_USER_ERROR);
             return false;
           }
-          else { echo 2; }
         }
       }
 
@@ -125,8 +133,7 @@ class fileManager {
   }
 
   public function createDir($overwrite = false,$perm = 0777) {
-    echo $dir = $this->activeDir;
-    echo $parentDir = $this->parentDirectory($this->activeDir);
+    $parentDir = $this->parentDirectory($this->activeDir);
 
     if (!is_dir($parentDir)) { // The sheer recursion of this is kinda cool :P
       $createDir = new fileManager;
@@ -134,18 +141,29 @@ class fileManager {
       $createDir->createDir(false,$perm);
     }
 
-    if (is_dir($dir)) {
-      if (!$overwrite) { trigger_error($dir . ' cannot be created because it already exists and is not to be overwritten',E_USER_ERROR); return false; }
+    if (is_dir($this->activeDir)) {
+      if (!$overwrite) {
+        trigger_error($this->activeDir . ' cannot be created because it already exists and is not to be overwritten',E_USER_ERROR);
+        return false;
+      }
       else {
-        if(!deleteDir($dir)) { trigger_error($dir . ' already exists and cannot be deleted.',E_USER_ERROR); return false; }
+        if(!deleteDir($this->activeDir)) {
+          trigger_error($this->activeDir . ' already exists and cannot be deleted.',E_USER_ERROR);
+          return false;
+        }
       }
     }
 
-    if (mkdir($dir,$perm)) { return true; }
-    else { trigger_error($dir . ' can not be created for unknown reasons.',E_USER_ERROR); return false; }
+    if (mkdir($this->activeDir,$perm)) {
+      return true;
+    }
+    else {
+      trigger_error($this->activeDir . ' can not be created for unknown reasons.',E_USER_ERROR);
+      return false;
+    }
   }
 
-  function deleteFile() { echo 1;
+  function deleteFile() {
     if (!is_dir($this->activeDir)) {
       $this->createDir($overwrite,0777);
     }
