@@ -9,7 +9,8 @@
  * You should have received a copy of the GNU General Public License along with Fliler.  If not, see <http://www.gnu.org/licenses/>. */
 
 /* Library Beta 6
- * Guess what?! - Time to go OOP. All new functions should be OOP, and we should gradually convert the rest of it to OOP. Finish goal of Beta 6. */
+ * Guess what?! - Time to go OOP. All new functions should be OOP, and we should gradually convert the rest of it to OOP. Finish goal of Beta 7.
+ * Oh, also, while I generally license this all as GPLv3, I would _seriously_ appreciate anyone using anything in this file to give me credit (though its technically not required). It took a while to create, ya know? */
 
 require('libold.php'); // Functions depreciated that may be removed soon.
 require('mysql.php'); // MySQL Lib
@@ -71,6 +72,7 @@ class fileManager {
 
   public function lockedFile() {
     global $lockedFiles;
+
     if (in_array($this->activeFile,$lockedFiles)) {
       return true;
     }
@@ -92,16 +94,21 @@ class fileManager {
     else {
       if (file_exists($this->activeFile)) {
         if (!$overwrite) {
-          trigger_error($file . ' already exists and is not to be overwritten.',E_USER_ERROR);
+          trigger_error($this->activeFile . ' already exists and is not to be overwritten.',E_USER_ERROR);
           return false;
         }
-        elseif (!is_writable($file)) {
-          trigger_error($file . ' already exists and is not writable.',E_USER_ERROR);
+        elseif (!is_writable($this->activeFile)) {
+          trigger_error($this->activeFile . ' already exists and is not writable.',E_USER_ERROR);
           return false;
         }
-        elseif (!deleteFile(null,$file)) {
-          trigger_error($file . ' already exists and cannot be removed.',E_USER_ERROR);
-          return false;
+        else {
+          $moveFile = new fileManager;
+          $moveFile->setFile($this->activeDir,$this->activeFile);
+
+          if (!$deleteFile->deleteFile()) {
+            trigger_error($this->activeFile . ' already exists and cannot be removed.',E_USER_ERROR);
+            return false;
+          }
         }
       }
 
@@ -120,10 +127,12 @@ class fileManager {
     echo $dir = $this->activeDir;
     echo $parentDir = $this->parentDirectory($this->activeDir);
 
-    if (!is_dir($parentDir)) {
-      $this->activeDir = $parentDir;
-      $this->createDir(false,$perm);
+    if (!is_dir($parentDir)) { // The sheer recursion of this is kinda cool :P
+      $createDir = new fileManager;
+      $createDir->setDir($parentDir);
+      $createDir->createDir(false,$perm);
     }
+
     if (is_dir($dir)) {
       if (!$overwrite) { trigger_error($dir . ' cannot be created because it already exists and is not to be overwritten',E_USER_ERROR); return false; }
       else {
@@ -135,8 +144,7 @@ class fileManager {
     else { trigger_error($dir . ' can not be created for unknown reasons.',E_USER_ERROR); return false; }
   }
 
-  function deleteFile($dir,$file) {
-    $dir = $this->activeDir;
+  function deleteFile() { echo 1;
     if (!is_dir($this->activeDir)) {
       $this->createDir($overwrite,0777);
     }

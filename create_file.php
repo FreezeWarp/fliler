@@ -54,6 +54,7 @@ if ($perm['MkF']) {
     case 2:
     $dir = $_POST['dir'];
     $file = $_POST['file'];
+    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? $ow = 1 : $ow = 0);
     $contents = $_POST['contents'];
     if ($_POST['force_ext']) {
       if (strstr($file,'.')) {
@@ -78,10 +79,9 @@ if ($perm['MkF']) {
 
     $fm = new fileManager;
     $fm->setFile($dir,$file);
-    $fm->createFile($contents);
+    $fm->createFile($contents,$ow);
 
 /*    $file2 = $accessDirectory . $dir . '/' . $file;
-    $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? $ow = 1 : $ow = 0);
     if (createFile($uploadDirectory . $dir,$file,$contents,$ow)) {
       echo container('The file has been successfully created. What would you like to do now?','<ol>
   <li><a href="create_file.php">Create Another File</a></li>
