@@ -91,6 +91,31 @@ class fileManager {
       $this->setDir($dir,$uac);
       $this->activeFile = $this->activeDir . $file;
     }
+
+    if (is_readable($this->activeFile)) {
+      $this->isReadable = true;
+    }
+    if (is_writable($this->activeFile)) {
+      $this->isWritable = true;
+    }
+  }
+
+  public function fileExists() {
+    if (is_file($this->activeFile)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  public function dirExists() {
+    if (is_dir($this->activeDir)) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
   public function lockedFile() {
@@ -106,7 +131,7 @@ class fileManager {
 
   public function createFile($content = null,$overwrite = false) {
     if (!is_dir($this->activeDir)) {
-      $this->createDir($overwrite,0777);
+      $this->createDir(false,0777);
     }
 
     if ($this->lockedFile()) {
@@ -145,26 +170,100 @@ class fileManager {
       else {
         return true;
       }
+    }
+  }
 
-      /*if ($content) {
+  /* Security Note on Using Rename() instead: If a file already exists, it must be overwritten, a permission only granted if a file can be deleted, which usually is higher than moving/renaming files. This largely makes move_uploaded_file() useless. */
+  public function uploadFile($dir,$file,$overwrite = 0) {
+    if (!is_dir($this->activeDir)) {
+      $this->createDir(false,0777);
+    }
 
-        if (!file_put_contents($this->activeFile, $content)) {
-          trigger_error($this->activeFile . ' cannot be written for unknown reasons.',E_USER_ERROR);Z
+    if ($this->lockedFile()) {
+      trigger_error($this->activeFile . ' is protected.',E_USER_ERROR);
+      return false;
+    }
+    else {
+      if (is_file($this->activeFile)) {
+        if (!$overwrite) {
+          trigger_error($this->activeFile . ' already exists and is not to be overwritten.',E_USER_ERROR);
+          return false;
+        }
+        elseif (!is_writable($this->activeFile)) {
+          trigger_error($this->activeFile . ' already exists and is not writable.',E_USER_ERROR);
           return false;
         }
         else {
-          return true;
+          $deleteFile = new fileManager;
+          $deleteFile->setFile(false, $this->activeFile);
+
+          if (!$deleteFile->deleteFile()) {
+            trigger_error($this->activeFile . ' already exists and cannot be removed.',E_USER_ERROR);
+            return false;
+          }
         }
       }
+
+      if (!rename($_FILES["file"]["tmp_name"],$file)) {
+        trigger_error($file . ' cannot be uploaded for unknown reasons.',E_USER_ERROR);
+        return false;
+      }
       else {
-        if(!touch($this->activeFile)) {
-          trigger_error($this->activeFile . ' cannot be written for unknown reasons.',E_USER_ERROR);
+        return true;
+      }
+    }
+  }
+
+  public function moveFile($newPath,$overwrite = 0,$upload = false,$url = false) {
+    if (!is_dir($this->activeDir)) {
+      $this->createDir(false,0777);
+    }
+
+    if ($this->lockedFile()) {
+      trigger_error($this->activeFile . ' is protected.',E_USER_ERROR);
+      return false;
+    }
+    elseif (!$this->fileExists()) {
+      trigger_error($this->activeFile . ' does not exist.',E_USER_ERROR);
+      return false;
+    }
+    elseif (!$this->isWritable) {
+      trigger_error($this->activeFile . ' can not be written.',E_USER_ERROR);
+    }
+    else {
+      if (is_file($newPath)) {
+        if (!$overwrite) {
+          trigger_error($newPath . ' already exists and is not to be overwritten.',E_USER_ERROR);
           return false;
         }
-        else { echo $this->activeFile;
-          return true;
+        else {
+          if (!is_writable($newPath)) {
+            trigger_error($newPath . ' already exists and can not be overwritten because it is not writable.',E_USER_ERROR);
+            return false;
+          }
+          else {
+            if (!deleteFile(null,$newPath)) {
+              trigger_error($newPath . ' already exists and can not be overwritten for unknown reasons.',E_USER_ERROR);
+              return false;
+            }
+          }
         }
-      }*/
+      }
+
+      if (!is_writable($this->parentDirectory($newPath))) { 
+        trigger_error($newDir . ' is not writable.',E_USER_ERROR);
+        return false;
+      }
+
+      if ($upload) {
+        if (!is_uploaded_file($oldFile)) { trigger_error($oldFile . ' is not an uploaded file, but will be moved as one.',E_USER_WARNING); }
+        if (move_uploaded_file($oldFile,$newFile)) { return true; }
+        else { trigger_error($oldFile . ' could not be uplaoded for unknown reasons.',E_USER_ERROR); return false; }
+      }
+      else {
+        if (rename($oldFile,$newFile)) { return true; }
+        else { trigger_error($oldFile . ' could not be moved for unknown reasons.',E_USER_ERROR); return false; }
+      }
     }
   }
 
