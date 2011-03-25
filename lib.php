@@ -279,7 +279,7 @@ class fileManager {
         }
       }
       else {
-        if (!rename($this->activeFile,$this->goalFile)) {
+        if (!rename($this->activeFile,$this->goalFile)) {var_dump($this);
           trigger_error($oldFile . ' could not be moved for unknown reasons.',E_USER_ERROR);
           return false;
         }

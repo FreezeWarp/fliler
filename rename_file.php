@@ -43,13 +43,23 @@ if ($perm['MvF']) {
 </form>',0);
     break;
     case 2:
-    $dir = $uploadDirectory . (($_GET['dir']) ? $_GET['dir'] : $_POST['dir']);
+    $dir = (($_GET['dir']) ? $_GET['dir'] : $_POST['dir']);
     $oldFile = (($_GET['file']) ? $_GET['file'] : $_POST['file']);
     $newFile = (($_GET['newFile']) ? $_GET['newFile'] : $_POST['newFile']);
     $file2 = $_POST['dir'] . '/' . $_POST['newFile'];
     $ow = $_POST['ow'];
-    if (($_POST['ow'] == 'on') && ($perm['RmF'])) { $ow = 1; } else { $ow = 0; }
-    if (moveFile($dir,$dir,$oldFile,$newFile,$ow)) {
+    if (($_POST['ow'] == 'on') && ($perm['RmF'])) {
+      $ow = 1;
+    }
+    else {
+      $ow = 0;
+    }
+
+    $uploadFile = new fileManager;
+    $uploadFile->setFile($dir,$oldFile,true);
+    $uploadFile->setGoal($dir,$newFile,true);
+
+    if ($uploadFile->moveFile($ow)) {
       echo container('The file has been successfully renamed. What would you like to do now?','<ol>
   <li><a href="rename_file.php">Rename Another File</a></li>
   <li><a href="viewfile.php?f=' . urlencode($file2) . '">View the File</a></li>
