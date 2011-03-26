@@ -56,7 +56,7 @@ if ($perm['MkF']) {
       $file = $_FILES['file']['name'][$i];
 
       $uploadFile = new fileManager;
-      $uploadFile->setUploadedFile($tmpfile = $_FILES['file']['tmp_name'][$i]);
+      $uploadFile->setUploadedFile($_FILES['file']['tmp_name'][$i]);
       $uploadFile->setGoal($dir,$file,true);
 
       if ($uploadFile->moveFile($ow,true)) {
