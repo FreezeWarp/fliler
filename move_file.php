@@ -21,7 +21,7 @@ if ($perm['MvF']) {
   switch($stage) {
     case null:
     case 1:
-    $oldDirs = listDirs('oldDir','fileSelect');
+    $oldDirs = listDirs('oldDir','file');
     $newDirs = listDirs('newDir');
 
     echo container('Move a File','<form action="move_file.php?stage=2" method="post">

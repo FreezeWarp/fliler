@@ -1191,7 +1191,7 @@ function parseConfigNum($v){
   return $ret;
 }
 
-function listDirs($dirName = 'dir',$fileName = 'file',$tabIndex = null) {
+function listDirs($dirName = 'dir',$fileName = false,$tabIndex = null) {
   global $uploadDirectory, $directorySelect, $fileSelect, $selectMaxDepth, $hideDotFiles;
   static $listings;
   $listings = '';

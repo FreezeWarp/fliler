@@ -31,14 +31,11 @@ function resizeImage(id,newSize) {
   document.getElementById(id).width = newSize;
 }
 
-function changeField(id,id2) {
-  var selectmenu = document.getElementById(id);
-  //document.getElementById('fileSelect').innerHTML = array[selectmenu.selectedIndex];
-  //var filesmenu = selectmenu[selectmenu.selectedIndex].getAttribute("data-switch");
-  //document.getElementById('fileSelect').innerHTML = filesmenu;
-  var dir = selectmenu[selectmenu.selectedIndex].getAttribute('value');
+function changeField(id) {
+  var dir = $('#' + id).val();
+
   var content = http('fileSelect.php?d=' + dir);
-  document.getElementById('fileSelect').innerHTML = content;
+  $('#fileSelect').html(content);
 }
 
 /* Added 12/30/09, Simplified 01/03/10 */
