@@ -200,7 +200,7 @@ if ($perm['EdF']) {
           require_once('edit_file_3.php');
           echo '<form onclick="window.editor_content.setUiColor(\'#FFAD69\')" name="workarea" action="edit_file.php?stage=3" method="post">';
           $editor = new CKEditor();
-          $editor->basePath = '.ckeditor/';//window.demo_editor.setUiColor('#FFAD69')
+          $editor->basePath = '.ckeditor/';
           $editor->setUiColor = '#ffad69';
           $editor->editor('editor_content',$fileData['content'],array('uiColor' => '#87bde3',));
           echo '<input type="hidden" name="dir" value="' . $dir . '" /><input type="hidden" name="file" value="' . $file . '" /><input type="hidden" name="file2" value="' . $file2 . '" /><br /><input type="submit" value="Submit" /><input type="reset" value="Reset" /></form>';
