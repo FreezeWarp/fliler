@@ -44,8 +44,8 @@ if ($perm['MvF']) {
     break;
     case 2:
     $file = $_POST['file'];
-    $oldDir = $uploadDirectory . $_POST['oldDir'];
-    $newDir = $uploadDirectory . $_POST['newDir'];
+    $oldDir = $_POST['oldDir'];
+    $newDir = $_POST['newDir'];
     $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? true : false);
 
     $moveFile = new fileManager;
