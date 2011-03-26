@@ -521,65 +521,6 @@ function safeFile($string) {
   return $string = preg_replace('[\W]','_',$string);
 }
 
-/* uploadFile v.2
- * Security Note on Using Rename() instead: If a file already exists, it must be overwritten, a permission only granted if a file can be deleted, which usually is higher than moving/renaming files. This largely makes move_uploaded_file() useless. */ 
-function uploadFile($dir,$file,$overwrite = 0) {
-  if ($dir) {
-    $dir = formatDir($dir);
-    if (!is_dir($dir)) {
-      if(!createDir($dir,0777)) { trigger_error($dir . ' Cannot be created.',E_USER_ERROR); return false; }
-    }
-    $file = $dir . $file;
-  }
-
-  if (lockedFile($file)) { trigger_error($file . ' is protected.',E_USER_ERROR); return false; }
-  else {
-    if (file_exists($file)) {
-      if ($overwrite == 0) { trigger_error($file . ' already exists and is not to be overwritten.',E_USER_ERROR); return false; }
-      if (!is_writable($file)) { trigger_error($file . ' already exists and is not writable.',E_USER_ERROR); return false; }
-
-      if(!deleteFile(null,$file)) { trigger_error($file . ' cannot be removed.',E_USER_ERROR); return false; }
-    }
-
-    if(rename($_FILES["file"]["tmp_name"],$file)) { return true; }
-    else { trigger_error($file . ' cannot be uploaded for unknown reasons.',E_USER_ERROR); return false; }
-  }
-}
-
-/* moveFile() v.2.1 */
-function moveFile($oldDir,$newDir,$oldFile,$newFile,$overwrite = 0,$upload = false,$url = false) {
-  if (!$newFile) { $newFile = $oldFile; }
-  if ($oldDir) { $oldDir = formatDir($oldDir); $oldFile = $oldDir . $oldFile; }
-  if ($newDir) { $newDir = formatDir($newDir); $newFile = $newDir . $newFile; }
-
-  if (lockedFile($oldFile)) { trigger_error($oldFile . ' is protected.',E_USER_ERROR); return false; }
-  elseif (lockedFile($newFile)) { trigger_error($newFile . ' is protected.',E_USER_ERROR); return false; }
-  elseif (!file_exists($oldFile)) { trigger_error($oldFile . ' does not exist.',E_USER_ERROR); return false; }
-  else {
-    if (file_exists($newFile)) {
-      if ($overwrite == 0) { trigger_error($newFile . ' already exists and is not to be overwritten.',E_USER_ERROR); return false; }
-      else {
-        if (!is_writable($newFile)) { trigger_error($newFile . ' already exists and can not be overwritten because it is not writable.',E_USER_ERROR); return false; }
-        if (!deleteFile(null,$newFile)) { trigger_error($newFile . ' already exists and can not be overwritten for unknown reasons.',E_USER_ERROR); return false; }
-      }
-    }
-
-    if (!file_exists($oldFile)) { trigger_error($oldFile . ' does not exist.',E_USER_ERROR); return false; }
-    if (!is_writable($oldFile)) { trigger_error($oldFile . ' is not writable.',E_USER_ERROR); return false; }
-    if ((!is_writable($newDir)) && ($newDir == true)) { trigger_error($newDir . ' is not writable.',E_USER_ERROR); return false; }
-
-    if ($upload) {
-      if (!is_uploaded_file($oldFile)) { trigger_error($oldFile . ' is not an uploaded file, but will be moved as one.',E_USER_WARNING); }
-      if (move_uploaded_file($oldFile,$newFile)) { return true; }
-      else { trigger_error($oldFile . ' could not be uplaoded for unknown reasons.',E_USER_ERROR); return false; }
-    }
-    else {
-      if (rename($oldFile,$newFile)) { return true; }
-      else { trigger_error($oldFile . ' could not be moved for unknown reasons.',E_USER_ERROR); return false; }
-    }
-  }
-}
-
 function renameFile($dir,$oldFile,$newFile,$overwrite = 0) {
   if ($dir) { $dir = formatDir($dir); $oldFile = $dir . $oldFile; $newFile = $dir . $newFile; }
 
