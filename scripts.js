@@ -36,7 +36,7 @@ function changeField(id,id2) {
   //document.getElementById('fileSelect').innerHTML = array[selectmenu.selectedIndex];
   //var filesmenu = selectmenu[selectmenu.selectedIndex].getAttribute("data-switch");
   //document.getElementById('fileSelect').innerHTML = filesmenu;
-  var dir = selectmenu[selectmenu.selectedIndex].getAttribute("value");
+  var dir = selectmenu[selectmenu.selectedIndex].getAttribute('value');
   var content = http('fileSelect.php?d=' + dir);
   document.getElementById('fileSelect').innerHTML = content;
 }

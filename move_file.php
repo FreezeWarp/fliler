@@ -21,8 +21,9 @@ if ($perm['MvF']) {
   switch($stage) {
     case null:
     case 1:
-    $oldDirs = listDirs('oldDir');
+    $oldDirs = listDirs('oldDir','fileSelect');
     $newDirs = listDirs('newDir');
+
     echo container('Move a File','<form action="move_file.php?stage=2" method="post">
   <div class="left">
     <label for="file">File to be Moved:</label><br />
@@ -45,13 +46,16 @@ if ($perm['MvF']) {
     $file = $_POST['file'];
     $oldDir = $uploadDirectory . $_POST['oldDir'];
     $newDir = $uploadDirectory . $_POST['newDir'];
-    $file2 = $accessDirectory . $_POST['newDir'] . '/' . $_POST['file'];
     $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? true : false);
 
-    if (moveFile($oldDir,$newDir,$file,$file,$ow)) {
+    $moveFile = new fileManager;
+    $moveFile->setFile($oldDir,$file,true);
+    $moveFile->setGoal($newDir,$file,true);
+
+    if ($moveFile->moveFile($ow)) {
       echo container('The file has been successfully moved. What would you like to do now?','<ol>
   <li><a href="move_file.php">Move Another File</a></li>
-  <li><a href="viewfile.php?f=' . urlencode($file2) .'">View the File</a></li>
+  <li><a href="viewfile.php?f=' . urlencode($accessDirectory . $_POST['newDir'] . '/' . $_POST['file']) .'">View the File</a></li>
   <li><a href="index.php">Go to the Index</a></li>
   <li><a href="javascript:window.close();">Close This Window</a></li>
 </ol>',0);

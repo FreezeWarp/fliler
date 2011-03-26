@@ -1194,6 +1194,7 @@ function parseConfigNum($v){
 function listDirs($dirName = 'dir',$fileName = 'file',$tabIndex = null) {
   global $uploadDirectory, $directorySelect, $fileSelect, $selectMaxDepth, $hideDotFiles;
   static $listings;
+  $listings = '';
 
   if ($directorySelect) {
     $files = array_merge(array(''),listFiles($uploadDirectory,null,null,null,'dir',true,false,array()));
@@ -1202,12 +1203,13 @@ function listDirs($dirName = 'dir',$fileName = 'file',$tabIndex = null) {
   if ($files) {
     $listings .= '<select name="' . $dirName . '" id="' . $dirName . '"' . (($fileSelect) ? ' onchange="changeField(\'' . $dirName . '\')" onselect="changeField(\'' . $dirName . '\')"' : '') . (($tabIndex) ? ' tabindex="' . $tabIndex . '"' : '') . '>
 ' .  readArray($files) . '
-</select>' . (($fileSelect) ? '
-<script>changeField("' . $dirName . '");</script>' : '');
+</select>' . (($fileSelect && $fileName) ? '
+<script>changeField("' . $fileName . '");</script>' : '');
   }
   else {
     $listings .= '<input name="' . $dirName . '" type="text" />';
   }
+
   return $listings;
 }
 

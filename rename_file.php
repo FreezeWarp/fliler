@@ -48,14 +48,14 @@ if ($perm['MvF']) {
     $newFile = (($_GET['newFile']) ? $_GET['newFile'] : $_POST['newFile']);
     $ow = ((($_POST['ow'] == 'on') && ($perm['RmF'])) ? true : false);
 
-    $uploadFile = new fileManager;
-    $uploadFile->setFile($dir,$oldFile,true);
-    $uploadFile->setGoal($dir,$newFile,true);
+    $renameFile = new fileManager;
+    $renameFile->setFile($dir,$oldFile,true);
+    $renameFile->setGoal($dir,$newFile,true);
 
-    if ($uploadFile->moveFile($ow)) {
+    if ($renameFile->moveFile($ow)) {
       echo container('The file has been successfully renamed. What would you like to do now?','<ol>
   <li><a href="rename_file.php">Rename Another File</a></li>
-  <li><a href="viewfile.php?f=' . urlencode($_POST['dir'] . '/' . $_POST['newFile']) . '">View the File</a></li>
+  <li><a href="viewfile.php?f=' . urlencode($accessDirectory . $_POST['dir'] . '/' . $_POST['newFile']) . '">View the File</a></li>
   <li><a href="index.php">Go to the Index</a></li>
   <li><a href="javascript:window.close();">Close This Window</a></li>
 </ol>',0);
