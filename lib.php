@@ -1191,7 +1191,7 @@ function parseConfigNum($v){
   return $ret;
 }
 
-function listDirs($dirName = 'dir',$fileName = false,$tabIndex = null) {
+function listDirs($dirName, $tabIndex = null, $stick = true) {
   global $uploadDirectory, $directorySelect, $fileSelect, $selectMaxDepth, $hideDotFiles;
   static $listings;
   $listings = '';
@@ -1201,10 +1201,10 @@ function listDirs($dirName = 'dir',$fileName = false,$tabIndex = null) {
   }
 
   if ($files) {
-    $listings .= '<select name="' . $dirName . '" id="' . $dirName . '"' . (($fileSelect) ? ' onchange="changeField(\'' . $dirName . '\')" onselect="changeField(\'' . $dirName . '\')"' : '') . (($tabIndex) ? ' tabindex="' . $tabIndex . '"' : '') . '>
+    $listings .= '<select name="' . $dirName . '" id="' . $dirName . '"' . (($fileSelect && $stick) ? ' onchange="changeField(\'' . $dirName . '\')" onselect="changeField(\'' . $dirName . '\')"' : '') . (($tabIndex) ? ' tabindex="' . $tabIndex . '"' : '') . '>
 ' .  readArray($files) . '
-</select>' . (($fileSelect && $fileName) ? '
-<script>changeField("' . $fileName . '");</script>' : '');
+</select>' . (($fileSelect && $stick) ? '
+<script>changeField("' . $dirName . '");</script>' : '');
   }
   else {
     $listings .= '<input name="' . $dirName . '" type="text" />';

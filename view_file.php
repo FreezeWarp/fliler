@@ -14,7 +14,7 @@ echo documentStart('View a File');
 
 /* Document Content */
 if ($perm['View']) {
-  $dirs = listDirs();
+  $dirs = listDirs('dir');
   echo container('View a File','<form action="viewfile.php" method="get">
   <div class="left">
     <label for="file">File (Include the Directory):</label><br />

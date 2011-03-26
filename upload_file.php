@@ -18,7 +18,7 @@ echo documentStart('Upload a File');
 
 /* Document Content */
 if ($perm['MkF']) {
-  $dirs = listDirs();
+  $dirs = listDirs('dir');
   switch($stage) {
     case null:
     case 1:

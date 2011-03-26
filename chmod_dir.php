@@ -21,7 +21,7 @@ if ($perm['ChmdD']) {
   switch($stage) {
     case null:
     case 1:
-    $dirs = listDirs();
+    $dirs = listDirs('dir');
     echo container('Change Permissions of a Directory','<form action="chmod_dir.php?stage=2" method="post">
   <div class="left">
     <label for="dir">Directory:</label><br />

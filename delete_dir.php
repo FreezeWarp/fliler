@@ -21,7 +21,7 @@ if ($perm['RmD']) {
   switch($stage) {
     case null:
     case 1:
-    $dirs = listDirs();
+    $dirs = listDirs('dir');
     echo container('Delete a Directory','<form action="delete_dir.php?stage=2" method="post">
   <div class="left">
     <label for="dir">Directory to be Deleted</label><br />

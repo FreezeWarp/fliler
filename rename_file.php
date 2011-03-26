@@ -21,7 +21,7 @@ if ($perm['MvF']) {
   switch($stage) {
     case null:
     case 1:
-    $oldDirs = listDirs();
+    $oldDirs = listDirs('dir');
     echo container('Rename a File','<form action="rename_file.php?stage=2" method="post">
   <div class="left">
     <label for="oldFile">File to be Renamed:</label><br />

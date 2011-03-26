@@ -23,7 +23,7 @@ if ($perm['View']) {
   switch($stage) {
     case false:
     case 1:
-    $dirs = listDirs();
+    $dirs = listDirs('dir');
     echo container('Download File','<form action="download_file.php?stage=2" method="post">
   <div class="left">
     <label for="file">File: </label><br />

@@ -21,7 +21,7 @@ if ($perm['MkF']) {
   switch($stage) {
     case null:
     case 1:
-    $dirs = listDirs(null,null,3);
+    $dirs = listDirs('dir',3);
     echo container('Create a File','<form action="create_file.php?stage=2" method="post" enctype="multipart/form-data">
   <div class="left">
     <label for="contents">Contents:</label>
