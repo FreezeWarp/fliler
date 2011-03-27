@@ -818,6 +818,11 @@ function getMime($dir,$file) {
   return $mime;
 }
 
+function isZip($path) {
+  if (strstr($path,'zip:')) return true;
+  else return false;
+}
+
 /* fileData(string $dir, string $file) */
 function fileData($dir,$file,$data = array('backup' => true,'dot' => true,'size' => true,'lastMod' => true,'ext' => true,'name' => true,'owner' => true,'mime' => false,'content' => false)) {
   global $uploadDirectory, $tmpPathLocal, $zipRecreateDir;
@@ -837,7 +842,7 @@ function fileData($dir,$file,$data = array('backup' => true,'dot' => true,'size'
   elseif (strstr($dir,'flilerBackup:')) {
     echo 'Fliler Backup Mode';
   }
-  elseif (strstr($dir,'zip:')) {
+  elseif (isZip($dir)) {
     $filePath = preg_replace('/(.*)zip:(.*)(\.zip|\.cbz)\/(.*)/','$1$2$3',$dir);
     $dirPath = preg_replace('/(.*)zip:(.*)(\.zip|\.cbz)\/(.*)/','$4',$dir);
     $fileData = fileData(null, $filePath);
@@ -1000,7 +1005,7 @@ function listFiles($dir,$nameFilter = null,$extFilter = null,$hiddenFiles = null
   elseif (strstr($dir,'flilerBackup:')) {
     echo 'Fliler Backup Mode';
   }
-  elseif (strstr($dir,'zip:')) {
+  elseif (isZip($dir)) {
     $filePath = preg_replace('/(.*)zip:(.*)(\.zip|\.cbz)\/(.*)/','$1$2$3',$dir);
     $dirPath = preg_replace('/(.*)zip:(.*)(\.zip|\.cbz)\/(.*)/','$4',$dir);
     $fileData = fileData(null, $filePath);

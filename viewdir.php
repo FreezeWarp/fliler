@@ -38,7 +38,17 @@ if ($f != 2) {
 else {
   if ($e) $e = $exts[$t];
 }
+
 $dirPath = formatDir(urldecode($d));
+if (isZip($dirPath)) { // Archive!
+  $dirPathLocal = $tmpPathLocal . preg_replace('/^(.+?)zip:(\/|)(.+?)$/','$3',$dirPath) . '/';
+  $isZip = true;
+}
+else {
+  $dirPathLocal = $dirPath;
+  $izZip = false;
+}
+
 $cleanUrl = cleanDirUrl($f,@implode(',',$e),$n,$t,$s,$r);
 //else $e = array([0] = false);
 
@@ -124,19 +134,20 @@ if ($perm['View']) {
     foreach ($files as $file) {
       $fileid += 1;
       echo '<tr id="file' . $fileid . '"><td>';
-      if ($perm['RmF']) {
+      if ($perm['RmF'] && !$isZip) {
         echo '<a onclick="deleteFile(\'' . $dirPath . $file['file'] . '\',\'file' . $fileid . '\');"><img src="images/delete.png" /></a>';
       }
-      if ($perm['EdF']) {
+      if ($perm['EdF'] && !$isZip) {
         echo '<a href="edit_file.php?stage=2&file=' . $dirPath . $file['file'] . '"><img src="images/edit.png" /></a>';
       }
       if ($perm['MkF'] && $perm['MvF']) {
-        echo '<a onclick="copyFiles(\'' . $dirPath . $file['file']. '\',\'file' . $fileid . '\');"><img src="images/copy.png" /></a><a onclick="cutFiles(\'' . $dirPath . $file['file']. '\',\'file' . $fileid . '\');"><img src="images/cut.png" /></a>';
+        echo '<a onclick="copyFiles(\'' . $dirPath . $file['file']. '\',\'file' . $fileid . '\');"><img src="images/copy.png" /></a>';
+        if (!$isZip) echo '<a onclick="cutFiles(\'' . $dirPath . $file['file']. '\',\'file' . $fileid . '\');"><img src="images/cut.png" /></a>';
       }
-      echo '<a href="download_file.php?stage=3&file=' . urlencode($dirPath . $file['file']) . '"><img src="images/save.png" /></a></td><td><img src="images/file.png" />&nbsp;<a href="viewfile.php?file=' . urlencode($dirPath . $file['file']) . '">' . wordwrap($file['file'],25,'<br />',true) . '</a>' . ($file['ext'] == 'zip' | $file['ext'] == 'cbz' ? ' <a href="viewdir.php?d=zip:' . urlencode($dirPath . $file['file']) . $cleanUrl . '">(View as Dir)</a>' : '') . '</td><td>' . $file['lastMod'][1] . '</td><td>' . $file['owner'] . '</td><td>' . $file['size'][1] . '</td><td>' . $file['mime'] . '</td><td class="contentExcerpt" align="center">';
+      echo '<a href="download_file.php?stage=3&file=' . urlencode($dirPathLocal . $file['file']) . '"><img src="images/save.png" /></a></td><td><img src="images/file.png" />&nbsp;<a href="viewfile.php?file=' . urlencode($dirPath . $file['file']) . '">' . wordwrap($file['file'],25,'<br />',true) . '</a>' . ($file['ext'] == 'zip' | $file['ext'] == 'cbz' ? ' <a href="viewdir.php?d=zip:' . urlencode($dirPath . $file['file']) . $cleanUrl . '">(View as Dir)</a>' : '') . '</td><td>' . $file['lastMod'][1] . '</td><td>' . $file['owner'] . '</td><td>' . $file['size'][1] . '</td><td>' . $file['mime'] . '</td><td class="contentExcerpt" align="center">';
       switch($file['ext']) {
         case 'png': case 'gif': case 'jpg': case 'jpeg': case 'svg':
-        echo '<img src="' . $uploadUrl . $dirPath . $file['file'] . '" style="max-width: 40px; max-height: 40px;" />';
+        echo '<img src="' . $uploadUrl . $dirPathLocal . $file['file'] . '" style="max-width: 40px; max-height: 40px;" />';
         break;
         case 'htm': case 'html': case 'php': case 'js': case 'css': case 'txt': case 'pl': case 'py': case 'text': case 'txt': case 'xml':
         echo '<div style="font-size: 8px; white-space: pre; width: 60px; height: 100px; overflow: hidden; background-color: white; padding: 2px; border: 1px solid black; text-align: left;">' . wordwrap(htmlentities($file['content']),30,'<br />',true) . '</div>';
