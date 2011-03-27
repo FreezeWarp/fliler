@@ -81,7 +81,7 @@ if ($perm['EdF']) {
         switch ($_GET['editor']) {
           // Built-in Editor
           case 1:
-          echo '<script src="edit_file.js" type="text/javascript"></script>';
+          echo '<script src="client/edit_file.js" type="text/javascript"></script>';
           echo container('Standard HTML Editor' . ($advanced ? '<select style="width: 100px;" onChange="addPTag2(\'span\',\'font-size\',options[selectedIndex].value)">
   <option value="100%">Font Size</option>
   <option value="6px">6px</option>
@@ -191,7 +191,7 @@ if ($perm['EdF']) {
 
           // Koivi Editor
           case 2:
-          echo '<script src="edit_file_2.js" type="text/javascript"></script><form onsubmit="editor.prepareSubmit();" name="workarea" action="edit_file.php?stage=3" method="post"><script type="text/javascript">var editor = new WYSIWYG_Editor(\'editor\',\'' . addslashes(str_replace("\n",'',$fileData['content'])) . '\'); editor.display();</script><input type="hidden" name="dir" value="' . $dir . '" /><input type="hidden" name="file" value="' . $file . '" /><input type="hidden" name="file2" value="' . $file2 . '" /><br /><input type="submit" value="Submit" /></form>';
+          echo '<script src="client/edit_file_2.js" type="text/javascript"></script><form onsubmit="editor.prepareSubmit();" name="workarea" action="edit_file.php?stage=3" method="post"><script type="text/javascript">var editor = new WYSIWYG_Editor(\'editor\',\'' . addslashes(str_replace("\n",'',$fileData['content'])) . '\'); editor.display();</script><input type="hidden" name="dir" value="' . $dir . '" /><input type="hidden" name="file" value="' . $file . '" /><input type="hidden" name="file2" value="' . $file2 . '" /><br /><input type="submit" value="Submit" /></form>';
           break;
 
           // Ck Editor

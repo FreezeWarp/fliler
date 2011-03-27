@@ -1342,14 +1342,14 @@ function container($title,$message,$class = false,$hide = false,$lock = false) {
 
 /* Document Start */
 function documentStart($title) {
-  global $branding, $user, $enableBrowserDetection, $enableJquery;
+  global $branding, $user, $enableBrowserDetection;
 
   if ($enableBrowserDetection) {
     $browser = getBrowser();
     if ($browser['browser'] == 'msie') {
       switch ($browser['majorVersion']) {
-        case 6: $enableJquery = true; $include = 'styles-ie6.js'; break;
-        case 7: $enableJquery = true; $include = 'styles-ie7.js'; break;
+        case 6: $include = 'styles-ie6.js'; break;
+        case 7: $include = 'styles-ie7.js'; break;
       }
     }
   }
@@ -1365,9 +1365,9 @@ function documentStart($title) {
   <title>' . $branding . ': Online File Manager - ' . $title . '</title>
   <meta name="author" content="Joseph Parsons" />
   <meta name="generator" content="Fliler v.B6" />
-  <link rel="stylesheet" type="text/css" href="styles.css" />' . (($enableJquery) ? '
-  <script type="text/javascript" src="jquery.js"></script>' : '') . (($include) ? '<script type="text/javascript" src="' . $include . '"></script>' : '') . '
-  <script type="text/javascript" src="scripts.js"></script>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <script type="text/javascript" src="client/jquery.js"></script>' . (($include) ? '<script type="text/javascript" src="client/' . $include . '"></script>' : '') . '
+  <script type="text/javascript" src="client/scripts.js"></script>
 </head>
 <body>
   <div style="float: right; text-align: right;">Logged in as ' . $user['username'] . ' (<a href="logout.php">Logout</a>)<br /><a href="index.php">Return to the Index</a></div>
